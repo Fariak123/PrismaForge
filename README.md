@@ -1,1 +1,1 @@
-*PrismaForge* — An intelligent visual database design IDE featuring live schema validation, automatic relationship detection, production-ready Prisma and SQL code generation, migration previews, and a modular architecture designed for future real-time collaboration.
+**PrismaForge** — An intelligent visual database design IDE featuring live schema validation, automatic relationship detection, production-ready Prisma and SQL code generation, migration previews, and a modular architecture designed for future real-time collaboration.
