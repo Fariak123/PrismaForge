@@ -7,10 +7,11 @@ import {
   useNodesState,
   useEdgesState,
 } from "@xyflow/react";
-
 import "@xyflow/react/dist/style.css";
-
 import TableNode from "../../entities/table/TableNode";
+// import { useMemo } from "react";
+import { useSchemaStore } from "../../entities/schema/schema.store";
+import Toolbar from "../toolbar";
 
 const nodeTypes = {
   table: TableNode,
@@ -57,9 +58,32 @@ export default function Canvas() {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
+    const tables = useSchemaStore((state) => state.tables);
+    // const nodes = useMemo(() => tablesToNodes(tables), [tables]);
+
+    const handleAddTable = () => {
+        setNodes((nodes) => [
+            ...nodes,
+        {
+            id: crypto.randomUUID(),
+            type: "table",
+            position: {
+                x: 300 + Math.random() * 100,
+                y: 200 + Math.random() * 100,
+            },
+            data: {
+                name: "NewTable",
+                columns: [],
+            },
+        },
+    ]);
+};
+
   return (
-    <div className="h-screen w-screen bg-zinc-950">
-      <ReactFlow
+    <div className="relative h-screen w-screen bg-zinc-950">
+      <Toolbar onAddTable={handleAddTable} />
+      <div className="h-full pt-14">
+        <ReactFlow
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -83,6 +107,8 @@ export default function Canvas() {
 
   <Controls />
 </ReactFlow>
+      </div>
+      
     </div>
   );
 }
