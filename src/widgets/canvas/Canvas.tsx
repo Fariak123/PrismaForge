@@ -18,24 +18,35 @@ const nodeTypes = {
 
 const initialNodes = [
   {
-    id: "1",
+    id: "user",
     type: "table",
-    position: { x: 200, y: 120 },
+    position: {
+      x: 100,
+      y: 100,
+    },
     data: {
       name: "User",
       columns: [
         {
+          id: "1",
           name: "id",
           type: "Int",
-          pk: true,
+          primaryKey: true,
         },
         {
+          id: "2",
           name: "email",
           type: "String",
         },
         {
+          id: "3",
           name: "password",
           type: "String",
+        },
+        {
+          id: "4",
+          name: "createdAt",
+          type: "DateTime",
         },
       ],
     },
@@ -49,23 +60,29 @@ export default function Canvas() {
   return (
     <div className="h-screen w-screen bg-zinc-950">
       <ReactFlow
-        fitView
         nodes={nodes}
         edges={edges}
+        nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        nodeTypes={nodeTypes}
+        fitView
+        minZoom={0.3}
+        maxZoom={2}
+        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
       >
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={20}
-          size={1}
-        />
+  <Background
+    variant={BackgroundVariant.Dots}
+    gap={24}
+    size={1.2}
+  />
 
-        <MiniMap />
+  <MiniMap
+    pannable
+    zoomable
+  />
 
-        <Controls />
-      </ReactFlow>
+  <Controls />
+</ReactFlow>
     </div>
   );
 }
