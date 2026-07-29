@@ -4,96 +4,65 @@ import {
   Controls,
   MiniMap,
   ReactFlow,
-  useNodesState,
-  useEdgesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import TableNode from "../../entities/table/TableNode";
-// import { useMemo } from "react";
-import { useSchemaStore } from "../../entities/schema/schema.store";
 import Toolbar from "../toolbar";
+import Inspector from "../inspector";
+import { useEditorStore } from "../../features/canvas/editor.store";
 
 const nodeTypes = {
   table: TableNode,
 };
 
-const initialNodes = [
-  {
-    id: "user",
-    type: "table",
-    position: {
-      x: 100,
-      y: 100,
-    },
-    data: {
-      name: "User",
-      columns: [
-        {
-          id: "1",
-          name: "id",
-          type: "Int",
-          primaryKey: true,
-        },
-        {
-          id: "2",
-          name: "email",
-          type: "String",
-        },
-        {
-          id: "3",
-          name: "password",
-          type: "String",
-        },
-        {
-          id: "4",
-          name: "createdAt",
-          type: "DateTime",
-        },
-      ],
-    },
-  },
-];
 
 export default function Canvas() {
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const nodes = useEditorStore(
+      (state) => state.nodes
+    );
 
-    const tables = useSchemaStore((state) => state.tables);
-    // const nodes = useMemo(() => tablesToNodes(tables), [tables]);
+    const edges = useEditorStore(
+      (state) => state.edges
+    );
 
-    const handleAddTable = () => {
-        setNodes((nodes) => [
-            ...nodes,
-        {
-            id: crypto.randomUUID(),
-            type: "table",
-            position: {
-                x: 300 + Math.random() * 100,
-                y: 200 + Math.random() * 100,
-            },
-            data: {
-                name: "NewTable",
-                columns: [],
-            },
-        },
-    ]);
-};
+    const addTable = useEditorStore(
+      (state) => state.addTable
+    );
+
+    const onNodesChange = useEditorStore(
+      (state) => state.onNodesChange
+    );
+
+    const onEdgesChange = useEditorStore(
+      (state) => state.onEdgesChange
+    );
+
+    const selectTable = useEditorStore(
+      (state) => state.selectTable
+    );
 
   return (
     <div className="relative h-screen w-screen bg-zinc-950">
-      <Toolbar onAddTable={handleAddTable} />
-      <div className="h-full pt-14">
+      <Toolbar onAddTable={addTable} />
+      <Inspector />
+      <div className="h-full pt-14 pr-80">
         <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        fitView
-        minZoom={0.3}
-        maxZoom={2}
-        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
-      >
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          fitView
+          minZoom={0.3}
+          maxZoom={2}
+          defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+          onNodeClick={(_, node) => {
+            selectTable(node.id);
+          }}
+          onPaneClick={() => {
+            selectTable(null);
+          }}
+        >
   <Background
     variant={BackgroundVariant.Dots}
     gap={24}
