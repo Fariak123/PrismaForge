@@ -5,9 +5,12 @@ import {
   type Edge,
   type EdgeChange,
   type NodeChange,
+  type Connection,
 } from "@xyflow/react";
 
+
 import type { TableNodeData } from "../../entities/table/table.types";
+import type { TableColumn } from "../../entities/table/table.types";
 
 
 export type TableNode = {
@@ -44,6 +47,25 @@ interface EditorStore {
 
   onEdgesChange: (
     changes: EdgeChange[]
+  ) => void;
+
+  addColumn: (
+    nodeId: string
+  ) => void;
+
+  updateColumn: (
+    nodeId: string,
+    columnId: string,
+    updates: Partial<TableColumn>
+  ) => void;
+
+  deleteColumn: (
+    nodeId: string,
+    columnId: string
+  ) => void;
+
+  onConnect: (
+    connection: Connection
   ) => void;
 }
 
@@ -144,6 +166,83 @@ export const useEditorStore = create<EditorStore>(
           changes,
           state.edges
         ),
+      })),
+
+      addColumn: (nodeId) =>
+        set((state) => ({
+          nodes: state.nodes.map((node) =>
+            node.id === nodeId
+                ? {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    columns: [
+                      ...node.data.columns,
+                    {
+                      id: crypto.randomUUID(),
+                      name: "new_column",
+                      type: "String",
+                      primaryKey: false,
+                      nullable: true,
+                      unique: false,
+                    },
+                    ],
+                  },
+                }
+            : node
+          ),
+      })),
+
+      updateColumn: (nodeId, columnId, updates) =>
+        set((state) => ({
+          nodes: state.nodes.map((node) =>
+            node.id === nodeId
+            ? {
+              ...node,
+              data: {
+                ...node.data,
+                columns: node.data.columns.map((column) =>
+                  column.id === columnId
+                    ? {
+                      ...column,
+                      ...updates,
+                    }
+                    : column
+                ),
+              },
+            }
+            : node
+          ),
+      })),
+
+
+      deleteColumn: (nodeId, columnId) =>
+        set((state) => ({
+          nodes: state.nodes.map((node) =>
+            node.id === nodeId
+              ? {
+                ...node,
+                data: {
+                  ...node.data,
+                  columns: node.data.columns.filter(
+                    (column) => column.id !== columnId
+                  ),
+                },
+              }
+            : node
+          ),
+      })),
+
+      onConnect: (connection) =>
+        set((state) => ({
+          edges: [
+            ...state.edges,
+            {
+              ...connection,
+              id: crypto.randomUUID(),
+              type: "smoothstep",
+            },
+          ],
       })),
   })
 );

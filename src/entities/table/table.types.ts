@@ -3,7 +3,8 @@ import type { Node } from "@xyflow/react";
 export interface TableColumn {
   id: string;
   name: string;
-  type: string;
+  type: DataType;
+
   primaryKey?: boolean;
   nullable?: boolean;
   unique?: boolean;
@@ -15,3 +16,11 @@ export interface TableNodeData extends Record<string, unknown> {
 }
 
 export type TableNodeType = Node<TableNodeData, "table">;
+
+export type DataType =
+  | "String"
+  | "Int"
+  | "Boolean"
+  | "DateTime"
+  | "Json";
+

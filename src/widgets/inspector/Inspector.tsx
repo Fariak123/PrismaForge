@@ -1,12 +1,17 @@
 import { Database, Plus } from "lucide-react";
 import { useSelectedNode } from "../../features/canvas/editor.selectors";
 import { useEditorStore } from "../../features/canvas/editor.store";
+import ColumnEditor from "../../entities/column/ColumnEditor";
 
 export default function Inspector() {
   const node = useSelectedNode();
   const renameTable = useEditorStore(
     (state) => state.renameTable
   );
+  const addColumn = useEditorStore(
+    (state) => state.addColumn
+  );
+
   if (!node) {
     return (
       <aside className="absolute right-0 top-14 z-40 h-[calc(100vh-56px)] w-80 border-l border-zinc-800 bg-zinc-950">
@@ -44,25 +49,19 @@ export default function Inspector() {
 
         <div className="space-y-2">
           {table.columns.map((column) => (
-            <div
+            <ColumnEditor
               key={column.id}
-              className="flex items-center justify-between rounded-lg border border-zinc-800 px-3 py-2"
-            >
-              <span className="text-sm text-zinc-200">
-                {column.name}
-              </span>
-
-              <span className="text-xs text-zinc-500">
-                {column.type}
-              </span>
-            </div>
+              nodeId={node.id}
+              column={column}
+            />
           ))}
         </div>
 
         <button
+          onClick={() => addColumn(node.id)}
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-zinc-700 py-2 text-sm text-zinc-400 transition hover:border-blue-500 hover:text-blue-400"
         >
-          <Plus size={16} />
+          <Plus size={16}/>
           Add Column
         </button>
       </div>
