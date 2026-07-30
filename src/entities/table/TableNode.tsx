@@ -1,13 +1,20 @@
 import { memo } from "react";
-import { Handle, type NodeProps, Position } from "@xyflow/react";
+import { Handle, type NodeProps, Position, useUpdateNodeInternals } from "@xyflow/react";
 import type { TableNodeType } from "./table.types";
 import {
   Database,
   KeyRound,
   Circle,
 } from "lucide-react";
+import { useEffect } from "react";
 
-function TableNode({ data, selected }: NodeProps<TableNodeType>) {
+function TableNode({ id, data, selected }: NodeProps<TableNodeType>) {
+  const updateNodeInternals = useUpdateNodeInternals();
+
+  useEffect(() => {
+    updateNodeInternals(id);
+  }, [id, data.columns.length, updateNodeInternals]);
+
   return (
     <div
       className={`
@@ -27,11 +34,6 @@ function TableNode({ data, selected }: NodeProps<TableNodeType>) {
         }
       `}
     >
-      <Handle
-        type="target"
-        position={Position.Left}
-        className="!h-3 !w-3 !border-none !bg-blue-500"
-      />
 
       <div className="flex items-center gap-2 border-b border-zinc-700 bg-[#27293D] px-4 py-3">
         <Database size={18} className="text-blue-400" />
@@ -45,8 +47,39 @@ function TableNode({ data, selected }: NodeProps<TableNodeType>) {
         {data.columns.map((column) => (
           <div
             key={column.id}
-            className="flex items-center justify-between border-b border-zinc-800 px-4 py-2 text-sm last:border-none hover:bg-zinc-800/40"
+            className="
+    group
+    relative
+    flex
+    h-10
+    items-center
+    justify-between
+    border-b
+    border-zinc-800
+    px-4
+    text-sm
+    last:border-none
+    hover:bg-zinc-800/40
+"
           >
+            <Handle
+              type="target"
+              id={`target-${column.id}`}
+              position={Position.Left}
+              className="
+    !left-1
+    !h-3
+    !w-1
+    !rounded-full
+    !border-none
+    !bg-sky-400
+    opacity-0
+    transition-all
+    duration-150
+    group-hover:opacity-100
+    group-hover:shadow-[0_0_10px_#38bdf8]
+  "
+            />
             <div className="flex items-center gap-2">
               {column.primaryKey ? (
                 <KeyRound
@@ -65,18 +98,32 @@ function TableNode({ data, selected }: NodeProps<TableNodeType>) {
               </span>
             </div>
 
-            <span className="rounded bg-zinc-800 px-2 py-0.5 text-xs text-zinc-400">
+            <span className="min-w-20 rounded-md bg-zinc-800 px-2 py-1 text-center text-[11px] font-medium text-zinc-400">
               {column.type}
             </span>
+
+            <Handle
+              type="source"
+              id={`source-${column.id}`}
+              position={Position.Right}
+              className="
+    !right-1
+    !h-3
+    !w-1
+    !rounded-full
+    !border-none
+    !bg-sky-400
+    opacity-0
+    transition-all
+    duration-150
+    group-hover:opacity-100
+    group-hover:shadow-[0_0_10px_#38bdf8]
+  "
+            />
           </div>
         ))}
       </div>
 
-      <Handle
-        type="source"
-        position={Position.Right}
-        className="!h-3 !w-3 !border-none !bg-blue-500"
-      />
     </div>
   );
 }

@@ -8,7 +8,6 @@ import {
   type Connection,
 } from "@xyflow/react";
 
-
 import type { TableNodeData } from "../../entities/table/table.types";
 import type { TableColumn } from "../../entities/table/table.types";
 
@@ -22,7 +21,6 @@ export type TableNode = {
   };
   data: TableNodeData;
 };
-
 
 interface EditorStore {
   nodes: TableNode[];
@@ -238,9 +236,19 @@ export const useEditorStore = create<EditorStore>(
           edges: [
             ...state.edges,
             {
-              ...connection,
               id: crypto.randomUUID(),
-              type: "smoothstep",
+              source: connection.source!,
+              target: connection.target!,
+              sourceHandle: connection.sourceHandle,
+              targetHandle: connection.targetHandle,
+
+              type: "relationship",
+
+              animated: true,
+
+              data: {
+                type: "one-to-many",
+              },
             },
           ],
       })),

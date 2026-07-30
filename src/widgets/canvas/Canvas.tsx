@@ -4,14 +4,15 @@ import {
   Controls,
   MiniMap,
   ReactFlow,
-  type Connection,
+  useUpdateNodeInternals,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import TableNode from "../../entities/table/TableNode";
 import Toolbar from "../toolbar";
 import Inspector from "../inspector";
 import { useEditorStore } from "../../features/canvas/editor.store";
-import { useCallback } from "react";
+import RelationshipEdge from "../../entities/relationship/RelationshipEdge";
+import { useEffect } from "react";
 
 const nodeTypes = {
   table: TableNode,
@@ -47,6 +48,18 @@ export default function Canvas() {
       (state) => state.onConnect
     );
 
+    const edgeTypes = {
+      relationship: RelationshipEdge,
+    };
+
+    const updateNodeInternals = useUpdateNodeInternals();
+
+    useEffect(() => {
+        nodes.forEach((node) => {
+            updateNodeInternals(node.id);
+        });
+    }, [nodes, updateNodeInternals]);
+
   return (
     <div className="relative h-screen w-screen bg-zinc-950">
       <Toolbar onAddTable={addTable} />
@@ -55,7 +68,10 @@ export default function Canvas() {
         <ReactFlow
           nodes={nodes}
           edges={edges}
+
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           fitView
