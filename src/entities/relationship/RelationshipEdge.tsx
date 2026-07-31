@@ -1,7 +1,6 @@
 import {
   BaseEdge,
   EdgeLabelRenderer,
-  getBezierPath,
   getSmoothStepPath,
   type EdgeProps,
 } from "@xyflow/react";

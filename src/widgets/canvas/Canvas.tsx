@@ -13,6 +13,8 @@ import Inspector from "../inspector";
 import { useEditorStore } from "../../features/canvas/editor.store";
 import RelationshipEdge from "../../entities/relationship/RelationshipEdge";
 import { useEffect } from "react";
+import { generatePrisma } from "../../features/export/prisma.generator";
+import { useSchemaStore } from "../../entities/schema/schema.store";
 
 const nodeTypes = {
   table: TableNode,
@@ -54,6 +56,11 @@ export default function Canvas() {
 
     const updateNodeInternals = useUpdateNodeInternals();
 
+    const handleExport = () => {
+      const prisma = generatePrisma(nodes, edges);
+      console.log(prisma);
+    };
+
     useEffect(() => {
         nodes.forEach((node) => {
             updateNodeInternals(node.id);
@@ -62,7 +69,7 @@ export default function Canvas() {
 
   return (
     <div className="relative h-screen w-screen bg-zinc-950">
-      <Toolbar onAddTable={addTable} />
+      <Toolbar onAddTable={addTable} onExport={handleExport} />
       <Inspector />
       <div className="h-full pt-14 pr-80">
         <ReactFlow
