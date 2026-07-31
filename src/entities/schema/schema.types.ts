@@ -1,26 +1,10 @@
+import type {
+  TableColumn
+} from "../table/table.types";
+
 export interface Position {
   x: number;
   y: number;
-}
-
-export type DataType =
-  | "Int"
-  | "BigInt"
-  | "String"
-  | "Boolean"
-  | "Float"
-  | "Decimal"
-  | "DateTime"
-  | "Json";
-
-export interface Column {
-  id: string;
-  name: string;
-  type: DataType;
-
-  primaryKey: boolean;
-  nullable: boolean;
-  unique: boolean;
 }
 
 export interface Table {
@@ -29,7 +13,7 @@ export interface Table {
 
   position: Position;
 
-  columns: Column[];
+  columns: TableColumn[];
 }
 
 export type RelationshipType =

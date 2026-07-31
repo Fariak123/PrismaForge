@@ -4,7 +4,9 @@ import {
   Controls,
   MiniMap,
   ReactFlow,
-  useUpdateNodeInternals,
+  useNodesState,
+  type Connection,
+  type Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import TableNode from "../../entities/table/TableNode";
@@ -12,9 +14,14 @@ import Toolbar from "../toolbar";
 import Inspector from "../inspector";
 import { useEditorStore } from "../../features/canvas/editor.store";
 import RelationshipEdge from "../../entities/relationship/RelationshipEdge";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { generatePrisma } from "../../features/export/prisma.generator";
 import { useSchemaStore } from "../../entities/schema/schema.store";
+import {
+  relationshipsToEdges,
+  tablesToNodes,
+} from "../../entities/schema/schema.mapper";
+import type { TableNodeData } from "../../entities/table/table.types";
 
 const nodeTypes = {
   table: TableNode,
@@ -22,50 +29,92 @@ const nodeTypes = {
 
 
 export default function Canvas() {
-    const nodes = useEditorStore(
-      (state) => state.nodes
+    const tables = useSchemaStore((s) => s.tables);
+
+    const schemaNodes = useMemo<Node<TableNodeData>[]>(
+      () => tablesToNodes(tables),
+    [tables]);
+
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node<TableNodeData>>(schemaNodes);
+
+    const relationships = useSchemaStore(
+      (s) => s.relationships
     );
 
-    const edges = useEditorStore(
-      (state) => state.edges
-    );
+    const edges = useMemo(
+        () => relationshipsToEdges(relationships),
+    [relationships]);
 
-    const addTable = useEditorStore(
+    const addTable = useSchemaStore(
       (state) => state.addTable
-    );
-
-    const onNodesChange = useEditorStore(
-      (state) => state.onNodesChange
-    );
-
-    const onEdgesChange = useEditorStore(
-      (state) => state.onEdgesChange
     );
 
     const selectTable = useEditorStore(
       (state) => state.selectTable
     );
 
-    const onConnect = useEditorStore(
-      (state) => state.onConnect
+    const selectRelationship = useEditorStore(
+      (state) => state.selectRelationship
     );
 
     const edgeTypes = {
       relationship: RelationshipEdge,
     };
 
-    const updateNodeInternals = useUpdateNodeInternals();
+    const addRelationship = useSchemaStore(
+      (s) => s.addRelationship
+    );
+
+    const moveTable = useSchemaStore(
+      (state) => state.moveTable
+    );
 
     const handleExport = () => {
-      const prisma = generatePrisma(nodes, edges);
-      console.log(prisma);
+      const prisma = generatePrisma(tables, relationships);
     };
 
+    const handleConnect = (
+  connection: Connection
+) => {
+
+  if (
+    !connection.source ||
+    !connection.target ||
+    !connection.sourceHandle ||
+    !connection.targetHandle
+  ) {
+    return;
+  }
+
+  addRelationship({
+    id: crypto.randomUUID(),
+
+    sourceTableId:
+      connection.source,
+
+    targetTableId:
+      connection.target,
+
+    sourceColumnId:
+      connection.sourceHandle.replace(
+        "source-",
+        ""
+      ),
+
+    targetColumnId:
+      connection.targetHandle.replace(
+        "target-",
+        ""
+      ),
+
+    type: "one-to-many",
+  });
+};
+
     useEffect(() => {
-        nodes.forEach((node) => {
-            updateNodeInternals(node.id);
-        });
-    }, [nodes, updateNodeInternals]);
+        setNodes(schemaNodes);
+    }, [schemaNodes, setNodes]);
+
 
   return (
     <div className="relative h-screen w-screen bg-zinc-950">
@@ -75,12 +124,9 @@ export default function Canvas() {
         <ReactFlow
           nodes={nodes}
           edges={edges}
-
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
-
           onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
           fitView
           minZoom={0.3}
           maxZoom={2}
@@ -90,8 +136,16 @@ export default function Canvas() {
           }}
           onPaneClick={() => {
             selectTable(null);
+            selectRelationship(null);
           }}
-          onConnect={onConnect}
+          onConnect={handleConnect}
+          onNodeDragStop={(_, node) => {
+            moveTable(
+                node.id,
+                node.position.x,
+                node.position.y
+            )
+          }}
         >
   <Background
     variant={BackgroundVariant.Dots}

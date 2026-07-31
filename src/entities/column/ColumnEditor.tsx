@@ -1,8 +1,6 @@
 import { Trash2 } from "lucide-react";
-
-import { useEditorStore } from "../../features/canvas/editor.store";
-
 import type { TableColumn, DataType } from "../table/table.types";
+import { useSchemaStore } from "../schema/schema.store";
 
 
 interface Props {
@@ -16,11 +14,11 @@ export default function ColumnEditor({
   column,
 }: Props) {
 
-  const updateColumn = useEditorStore(
+  const updateColumn = useSchemaStore(
     (state) => state.updateColumn
   );
 
-  const deleteColumn = useEditorStore(
+  const deleteColumn = useSchemaStore(
     (state) => state.deleteColumn
   );
 
@@ -96,6 +94,25 @@ export default function ColumnEditor({
         />
 
         Primary Key
+      </label>
+
+      <label className="mt-2 flex items-center gap-2 text-sm text-zinc-300">
+        <input
+          type="checkbox"
+          checked={column.unique}
+          onChange={(e) =>
+            updateColumn(
+              nodeId,
+              column.id,
+              {
+                unique:
+                  e.target.checked,
+              }
+            )
+          }
+        />
+
+        Unique
       </label>
 
 

@@ -1,3 +1,5 @@
+import type { Edge } from "@xyflow/react";
+
 export type RelationshipType =
   | "one-to-one"
   | "one-to-many"
@@ -5,8 +7,12 @@ export type RelationshipType =
 
 
 export interface RelationshipData extends Record<string, unknown> {
-  type: RelationshipType;
+  relationshipType: RelationshipType;
 
-  sourceColumn?: string;
-  targetColumn?: string;
+  sourceColumnId: string;
+  targetColumnId: string;
+}
+
+export interface RelationshipEdge extends Edge<RelationshipData> {
+  data: RelationshipData
 }

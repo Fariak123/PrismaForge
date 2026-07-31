@@ -1,18 +1,18 @@
 import { Database, Plus } from "lucide-react";
-import { useSelectedNode } from "../../features/canvas/editor.selectors";
-import { useEditorStore } from "../../features/canvas/editor.store";
+import { useSelectedTable } from "../../features/canvas/editor.selectors";
 import ColumnEditor from "../../entities/column/ColumnEditor";
+import { useSchemaStore } from "../../entities/schema/schema.store";
 
 export default function Inspector() {
-  const node = useSelectedNode();
-  const renameTable = useEditorStore(
+  const table = useSelectedTable();
+  const renameTable = useSchemaStore(
     (state) => state.renameTable
   );
-  const addColumn = useEditorStore(
+  const addColumn = useSchemaStore(
     (state) => state.addColumn
   );
 
-  if (!node) {
+  if (!table) {
     return (
       <aside className="absolute right-0 top-14 z-40 h-[calc(100vh-56px)] w-80 border-l border-zinc-800 bg-zinc-950">
         <div className="flex h-full items-center justify-center text-sm text-zinc-500">
@@ -21,7 +21,6 @@ export default function Inspector() {
       </aside>
     );
   }
-  const table = node.data;
 
   return (
     <aside className="absolute right-0 top-14 z-40 h-[calc(100vh-56px)] w-80 border-l border-zinc-800 bg-zinc-950">
@@ -31,7 +30,7 @@ export default function Inspector() {
           <input
             value={table.name}
             onChange={(e) =>
-              renameTable(node.id, e.target.value)
+              renameTable(table.id, e.target.value)
             }
             className="w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-blue-500"
           />
@@ -51,14 +50,14 @@ export default function Inspector() {
           {table.columns.map((column) => (
             <ColumnEditor
               key={column.id}
-              nodeId={node.id}
+              nodeId={table.id}
               column={column}
             />
           ))}
         </div>
 
         <button
-          onClick={() => addColumn(node.id)}
+          onClick={() => addColumn(table.id)}
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-zinc-700 py-2 text-sm text-zinc-400 transition hover:border-blue-500 hover:text-blue-400"
         >
           <Plus size={16}/>
