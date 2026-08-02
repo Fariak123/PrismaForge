@@ -6,6 +6,14 @@ interface SchemaStore {
   tables: Table[];
   relationships: Relationship[];
 
+  isDirty: boolean;
+
+  setDirty: (
+    value: boolean
+  ) => void;
+
+  markSaved: () => void;
+
   selectedTableId: string | null;
   selectedRelationshipId: string | null,
 
@@ -73,6 +81,18 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
 
   relationships: [],
 
+  isDirty: false,
+
+  setDirty: (value) =>
+    set({
+      isDirty: value,
+    }),
+
+  markSaved: () =>
+    set({
+      isDirty:false,
+    }),
+
   selectedTableId: null,
     selectedRelationshipId: null,
       
@@ -108,6 +128,7 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
 
   set((state) => ({
     tables: [...state.tables, table],
+    isDirty: true,
   }));
 
   return table;
@@ -123,6 +144,7 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
             }
           : table
       ),
+      isDirty: true,
     })),
 
   renameTable: (id, name) =>
@@ -135,6 +157,7 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
           }
         : table
       ),
+      isDirty: true,
     })),
 
     deleteTable: (id) =>
@@ -156,6 +179,7 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
         ? null
         : state.selectedTableId,
 
+    isDirty: true,
   })),
 
     addColumn: (tableId) =>
@@ -178,6 +202,7 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
             }
             : table
         ),
+        isDirty: true,
       })),
 
       updateColumn: (
@@ -201,6 +226,7 @@ set((state) => ({
         }
       : table
   ),
+  isDirty: true,
 })),
 
 deleteColumn: (
@@ -219,6 +245,7 @@ set((state) => ({
         }
       : table
   ),
+  isDirty: true,
 })),
 
     addRelationship: (relationship) =>
@@ -243,6 +270,7 @@ set((state) => ({
           ...state.relationships,
           relationship,
         ],
+        isDirty: true,
       };
     }
     // Reverse connection:
@@ -263,6 +291,7 @@ set((state) => ({
               relationship.sourceColumnId,
           },
         ],
+        isDirty: true,
       };
     }
     return state;
@@ -278,6 +307,7 @@ set((state) => ({
             }
           : relationship
       ),
+      isDirty: true,
   })),
 
     deleteRelationship: (id) =>
@@ -287,6 +317,7 @@ set((state) => ({
             (r) => r.id !== id
           ),
         selectedRelationshipId: null,
+        isDirty: true,
       })),
 
 }));

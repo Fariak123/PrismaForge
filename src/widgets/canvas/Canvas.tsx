@@ -5,8 +5,10 @@ import {
   MiniMap,
   ReactFlow,
   useNodesState,
+  useReactFlow,
   type Connection,
   type Node,
+  type ReactFlowInstance,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import TableNode from "../../entities/table/TableNode";
@@ -23,26 +25,55 @@ import {
 import type { TableNodeData } from "../../entities/table/table.types";
 import { useSelectedRelationship, useSelectedTable } from "../../features/canvas/editor.selectors";
 import ExportModal from "../../widgets/export/ExportModal";
+import IssuesModal from "../issues/IssuesModal";
+import type { Table } from "../../entities/schema";
+import { saveProject } from "../../features/project/project.service";
+import { useValidation } from "../../features/validation/useValidation";
 
 const nodeTypes = {
   table: TableNode,
 };
 
+export function focusTable(
+  table: Table,
+  setCenter: ReactFlowInstance["setCenter"],
+  selectTable: (id: string) => void
+) {
+  selectTable(table.id);
+
+  setCenter(
+    table.position.x + 150,
+    table.position.y + 80,
+    {
+      zoom: 1.2,
+      duration: 500,
+    }
+  );
+}
+
 
 export default function Canvas() {
-    const [showExport, setShowExport] = useState(false);
-  
+    const reactFlow = useReactFlow();
+
     const tables = useSchemaStore((s) => s.tables);
+
+    const relationships = useSchemaStore(
+      (s) => s.relationships
+    );
+
+    const markSaved = useSchemaStore(s => s.markSaved);
+
+    const isDirty = useSchemaStore(s => s.isDirty);
+    
+    const [showExport, setShowExport] = useState(false);
+
+    const validation = useValidation(tables, relationships);
 
     const schemaNodes = useMemo<Node<TableNodeData>[]>(
       () => tablesToNodes(tables),
     [tables]);
 
     const [nodes, setNodes, onNodesChange] = useNodesState<Node<TableNodeData>>(schemaNodes);
-
-    const relationships = useSchemaStore(
-      (s) => s.relationships
-    );
 
     const edges = useMemo(
         () => relationshipsToEdges(relationships),
@@ -90,9 +121,30 @@ export default function Canvas() {
       (s) => s.deleteRelationship
     );
 
+    const handleGenerateSchema = () => {
+        validation.validate(() => {
+            setShowExport(true);
+        });
+    };
+
+
+const handleSaveProject = () => {
+  validation.validate(
+    () => {
+      saveProject({
+        version: 1,
+        name: "MyDatabase",
+        tables,
+        relationships,
+      });
+      markSaved();
+    }
+  );
+};
+
     const handleConnect = (
-  connection: Connection
-) => {
+        connection: Connection
+    ) => {
 
   if (
     !connection.source ||
@@ -126,6 +178,28 @@ export default function Canvas() {
 
     type: "one-to-many",
   });
+};
+
+const handleFocusTable = (
+  tableId: string
+) => {
+  const table =
+    tables.find(
+      (t) => t.id === tableId
+    );
+  if (!table) return;
+
+  selectTable(table.id);
+
+  reactFlow.setCenter(
+    table.position.x + 150,
+    table.position.y + 80,
+    {
+      zoom: 1.2,
+      duration: 500,
+    }
+  );
+
 };
 
     useEffect(() => {
@@ -178,7 +252,23 @@ export default function Canvas() {
 
   return (
     <div className="relative h-screen w-screen bg-zinc-950">
-      <Toolbar onAddTable={addTable} onGenerateSchema={() => setShowExport(true)} />
+      <Toolbar 
+      onAddTable={() => {
+        const table = addTable();
+        selectTable(table.id);
+        reactFlow.setCenter(
+          table.position.x + 150,
+          table.position.y + 80,
+          {
+            zoom: 1,
+            duration: 600,
+          }
+        );
+      }} 
+      onGenerateSchema={handleGenerateSchema}
+      onSaveProject={handleSaveProject}
+      isDirty={isDirty}
+      />
       <Inspector />
       <div className="h-full pt-14 pr-80">
         <ReactFlow
@@ -226,14 +316,27 @@ export default function Canvas() {
   <Controls />
 </ReactFlow>
       </div>
-      {showExport && (
+      {validation.showIssues && (
+  <IssuesModal
+    issues={validation.issues}
+    onClose={() =>
+      validation.closeIssues()
+    }
+    onContinue={validation.continueAction}
+    onSelectTable={handleFocusTable}
+  />
+)}
+
+{
+  showExport && (
     <ExportModal
       prisma={prisma}
       onClose={() =>
         setShowExport(false)
       }
     />
-  )}
+  )
+}
     </div>
   );
 }
