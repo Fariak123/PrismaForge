@@ -1,0 +1,22 @@
+.shiki {
+  margin: 0 !important;
+  padding: 24px !important;
+
+  height: 100%;
+
+  overflow: auto;
+
+  background: transparent !important;
+
+  font-family:
+    "JetBrains Mono",
+    monospace !important;
+
+  font-size: 14px;
+
+  line-height: 1.7;
+}
+
+.shiki code {
+  font-family: inherit;
+}

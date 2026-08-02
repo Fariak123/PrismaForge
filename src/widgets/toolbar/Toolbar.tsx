@@ -1,11 +1,11 @@
-import { Plus, Download, Settings } from "lucide-react";
+import { Plus, Download, Settings, FileCode } from "lucide-react";
 
 interface ToolbarProps {
   onAddTable: () => void;
-  onExport: () => void;
+  onGenerateSchema: () => void;
 }
 
-export default function Toolbar({ onAddTable, onExport }: ToolbarProps) {
+export default function Toolbar({ onAddTable, onGenerateSchema }: ToolbarProps) {
   return (
     <header className="absolute left-0 top-0 z-50 flex h-14 w-full items-center justify-between border-b border-zinc-800 bg-zinc-950/90 px-6 backdrop-blur">
       <h1 className="text-lg font-semibold text-white">
@@ -22,11 +22,22 @@ export default function Toolbar({ onAddTable, onExport }: ToolbarProps) {
         </button>
 
         <button
-          onClick={onExport}
-          className="rounded-lg bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-500"
-        >
-          Export
-        </button>
+          onClick={() => onGenerateSchema()}
+          className="
+    flex items-center gap-2
+    rounded-lg
+    border border-zinc-700
+    bg-zinc-900
+    px-4 py-2
+    text-sm text-zinc-300
+    transition
+    hover:border-blue-500
+    hover:text-white
+  "
+>
+  <FileCode size={16} />
+  Generate Prisma Schema
+</button>
 
         <button className="rounded-lg border border-zinc-700 p-2 text-zinc-300 transition hover:bg-zinc-800">
           <Download size={18} />
