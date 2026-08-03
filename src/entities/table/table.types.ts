@@ -17,4 +17,16 @@ export interface TableNodeData extends Record<string, unknown> {
 
 export type TableNodeType = Node<TableNodeData, 'table'>;
 
-export type DataType = 'String' | 'Int' | 'Boolean' | 'DateTime' | 'Json';
+export type DataType = 'String' | 'Int' | 'BigInt' | 'Float' | 'Decimal' | 'Boolean' | 'DateTime' | 'Json' | 'Bytes';
+
+export const COLUMN_TYPES = [
+  "String",
+  "Int",
+  "BigInt",
+  "Float",
+  "Decimal",
+  "Boolean",
+  "DateTime",
+  "Json",
+  "Bytes",
+] as const;

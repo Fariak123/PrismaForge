@@ -15,7 +15,7 @@ interface Props {
 
   onSelectTable: (id: string) => void;
 
-  onSelectColumn?: (tableId: string, columnId: string) => void;
+  onSelectColumn: (tableId: string, columnId: string) => void;
 }
 
 export default function IssuesModal({

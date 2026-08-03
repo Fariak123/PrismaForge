@@ -81,6 +81,8 @@ export default function Canvas() {
 
   const highlightNode = useEditorStore((state) => state.highlightNode);
 
+  const highlightColumn = useEditorStore((state) => state.highlightColumn);
+
   const selectRelationship = useSchemaStore(
     (state) => state.selectRelationship,
   );
@@ -141,8 +143,24 @@ export default function Canvas() {
       duration: 500,
     });
 
-    highlightNode(table.id);
+    setTimeout(() => {
+        highlightNode(table.id);
+    }, 350)
   };
+
+  const handleFocusColumn = (tableId: string, columnId: string) => {
+    const table = tables.find((t) => t.id === tableId);
+    if (!table) return;
+    selectTable(tableId);
+    reactFlow.setCenter(table.position.x + 150, table.position.y + 80, {
+      zoom: 1.2,
+      duration: 500,
+    });
+
+    setTimeout(() => {
+        highlightColumn(columnId);
+  }, 350);
+  }
 
   useEffect(() => {
     setNodes(schemaNodes);
@@ -255,6 +273,7 @@ export default function Canvas() {
           onClose={project.closeIssues}
           onContinue={project.forceSave}
           onSelectTable={handleFocusTable}
+          onSelectColumn={handleFocusColumn}
         />
       )}
 

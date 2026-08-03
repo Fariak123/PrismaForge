@@ -1,4 +1,5 @@
 import { Plus, Import, FileCode, SaveCheck, SquarePlus } from 'lucide-react';
+import ProjectStatus from './ProjectStatus';
 
 interface ToolbarProps {
   onAddTable: () => void;
@@ -19,9 +20,9 @@ export default function Toolbar({
 }: ToolbarProps) {
   return (
     <header className="absolute left-0 top-0 z-50 flex h-14 w-full items-center justify-between border-b border-zinc-800 bg-zinc-950/90 px-6 backdrop-blur">
-      <h1 className="text-lg font-semibold text-white">
+      <h1 className="flex text-lg font-semibold text-white">
         PrismaForge
-        {isDirty && '*'}
+        {isDirty && <ProjectStatus dirty={isDirty} />}
       </h1>
 
       <div className="flex items-center gap-2">
@@ -69,7 +70,7 @@ export default function Toolbar({
   "
         >
           <SquarePlus size={16} />
-          New Project
+          New
         </button>
 
         <button
@@ -90,7 +91,7 @@ export default function Toolbar({
   "
         >
           <SaveCheck size={16} />
-          Save Project
+          Save
         </button>
 
         <button
@@ -109,7 +110,7 @@ export default function Toolbar({
     hover:bg-zinc-800"
         >
           <Import size={16} />
-          Import Project
+          Import
         </button>
       </div>
     </header>
