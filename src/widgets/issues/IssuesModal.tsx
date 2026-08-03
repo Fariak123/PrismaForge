@@ -1,15 +1,10 @@
-import {
-  AlertTriangle,
-} from "lucide-react";
+import { AlertTriangle } from 'lucide-react';
 
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
-import IssueMessage from "./IssueMessage";
+import IssueMessage from './IssueMessage';
 
-import type {
-  ValidationIssue,
-} from "../../features/validation/validation.types";
-
+import type { ValidationIssue } from '../../features/validation/validation.types';
 
 interface Props {
   issues: ValidationIssue[];
@@ -18,59 +13,33 @@ interface Props {
 
   onContinue: () => void;
 
-  onSelectTable: (
-    id:string
-  ) => void;
+  onSelectTable: (id: string) => void;
 
-  onSelectColumn?: (
-    tableId:string,
-    columnId:string
-  ) => void;
+  onSelectColumn?: (tableId: string, columnId: string) => void;
 }
-
 
 export default function IssuesModal({
   issues,
   onClose,
   onContinue,
   onSelectTable,
-  onSelectColumn
+  onSelectColumn,
 }: Props) {
-
-
   useEffect(() => {
-
-    const handleKeyDown = (
-      event: KeyboardEvent
-    ) => {
-
-      if (event.key === "Escape") {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
         onClose();
       }
-
     };
 
-
-    window.addEventListener(
-      "keydown",
-      handleKeyDown
-    );
-
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      window.removeEventListener(
-        "keydown",
-        handleKeyDown
-      );
+      window.removeEventListener('keydown', handleKeyDown);
     };
-
-
   }, [onClose]);
 
-
-
   return (
-
     <div
       className="
         fixed
@@ -84,8 +53,6 @@ export default function IssuesModal({
       "
       onMouseDown={onClose}
     >
-
-
       <div
         className="
           flex
@@ -99,12 +66,8 @@ export default function IssuesModal({
           bg-zinc-950
           shadow-2xl
         "
-        onMouseDown={(e) =>
-          e.stopPropagation()
-        }
+        onMouseDown={(e) => e.stopPropagation()}
       >
-
-
         {/* Header */}
 
         <div
@@ -117,7 +80,6 @@ export default function IssuesModal({
             p-5
           "
         >
-
           <div
             className="
               flex
@@ -125,15 +87,9 @@ export default function IssuesModal({
               gap-3
             "
           >
-
-            <AlertTriangle
-              size={22}
-              className="text-yellow-400"
-            />
-
+            <AlertTriangle size={22} className="text-yellow-400" />
 
             <div>
-
               <h2
                 className="
                   font-semibold
@@ -143,7 +99,6 @@ export default function IssuesModal({
                 Schema Problems
               </h2>
 
-
               <p
                 className="
                   text-xs
@@ -151,17 +106,12 @@ export default function IssuesModal({
                 "
               >
                 {issues.length} issue
-                {issues.length !== 1 && "s"}
-                {" found"}
+                {issues.length !== 1 && 's'}
+                {' found'}
               </p>
-
             </div>
-
           </div>
-
         </div>
-
-
 
         {/* Issues list */}
 
@@ -173,9 +123,7 @@ export default function IssuesModal({
             p-5
           "
         >
-
           {issues.map((issue) => (
-
             <div
               key={issue.id}
               className="
@@ -186,21 +134,15 @@ export default function IssuesModal({
                 p-4
               "
             >
-
               <IssueMessage
                 issue={issue}
                 onClose={onClose}
                 onSelectTable={onSelectTable}
                 onSelectColumn={onSelectColumn}
               />
-
             </div>
-
           ))}
-
         </div>
-
-
 
         {/* Footer */}
 
@@ -214,7 +156,6 @@ export default function IssuesModal({
             p-5
           "
         >
-
           <button
             onClick={onClose}
             className="
@@ -233,7 +174,6 @@ export default function IssuesModal({
             Cancel
           </button>
 
-
           <button
             onClick={onContinue}
             className="
@@ -250,14 +190,8 @@ export default function IssuesModal({
           >
             Continue
           </button>
-
-
         </div>
-
-
       </div>
-
     </div>
-
   );
 }

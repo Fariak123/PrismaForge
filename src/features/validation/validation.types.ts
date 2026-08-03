@@ -1,12 +1,9 @@
-export type ValidationSeverity =
-  | "error"
-  | "warning";
-
+export type ValidationSeverity = 'error' | 'warning';
 
 export interface ValidationIssue {
   id: string;
 
-  severity: "error" | "warning";
+  severity: 'error' | 'warning';
 
   message: string;
 

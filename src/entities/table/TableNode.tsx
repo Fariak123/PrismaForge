@@ -1,15 +1,19 @@
-import { memo } from "react";
-import { Handle, type NodeProps, Position, useUpdateNodeInternals } from "@xyflow/react";
-import type { TableNodeType } from "./table.types";
+import { memo } from 'react';
 import {
-  Database,
-  KeyRound,
-  Circle,
-} from "lucide-react";
-import { useEffect } from "react";
+  Handle,
+  type NodeProps,
+  Position,
+  useUpdateNodeInternals,
+} from '@xyflow/react';
+import type { TableNodeType } from './table.types';
+import { Database, KeyRound, Circle } from 'lucide-react';
+import { useEffect } from 'react';
+import { useEditorStore } from '../../features/canvas/editor.store';
 
 function TableNode({ id, data, selected }: NodeProps<TableNodeType>) {
   const updateNodeInternals = useUpdateNodeInternals();
+
+  const highlighted = useEditorStore((state) => state.highlightedNodeId === id);
 
   useEffect(() => {
     updateNodeInternals(id);
@@ -29,18 +33,28 @@ function TableNode({ id, data, selected }: NodeProps<TableNodeType>) {
 
         ${
           selected
-            ? "border-blue-500 shadow-blue-500/20"
-            : "border-zinc-700 hover:border-zinc-500"
+            ? 'border-blue-500 shadow-blue-500/20'
+            : 'border-zinc-700 hover:border-zinc-500'
+        }
+
+        ${
+          highlighted
+            ? `
+            border-yellow-400
+            shadow-lg
+            animate-ping-highlight
+            pointer-events-none
+          `
+            : `
+            border-zinc-700 hover:border-zinc-500
+          `
         }
       `}
     >
-
       <div className="flex items-center gap-2 border-b border-zinc-700 bg-[#27293D] px-4 py-3">
         <Database size={18} className="text-blue-400" />
 
-        <span className="font-semibold text-white">
-          {data.name}
-        </span>
+        <span className="font-semibold text-white">{data.name}</span>
       </div>
 
       <div>
@@ -82,20 +96,12 @@ function TableNode({ id, data, selected }: NodeProps<TableNodeType>) {
             />
             <div className="flex items-center gap-2">
               {column.primaryKey ? (
-                <KeyRound
-                  size={14}
-                  className="text-yellow-400"
-                />
+                <KeyRound size={14} className="text-yellow-400" />
               ) : (
-                <Circle
-                  size={8}
-                  className="fill-zinc-500 text-zinc-500"
-                />
+                <Circle size={8} className="fill-zinc-500 text-zinc-500" />
               )}
 
-              <span className="text-zinc-100">
-                {column.name}
-              </span>
+              <span className="text-zinc-100">{column.name}</span>
             </div>
 
             <span className="min-w-20 rounded-md bg-zinc-800 px-2 py-1 text-center text-[11px] font-medium text-zinc-400">
@@ -123,7 +129,6 @@ function TableNode({ id, data, selected }: NodeProps<TableNodeType>) {
           </div>
         ))}
       </div>
-
     </div>
   );
 }

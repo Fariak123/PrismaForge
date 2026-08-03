@@ -1,54 +1,50 @@
-import { Copy, Download, FileCode, X } from "lucide-react";
-import CodeViewer from "./CodeViewer";
-import { useEffect, useState } from "react";
+import { Copy, Download, FileCode, X } from 'lucide-react';
+import CodeViewer from './CodeViewer';
+import { useEffect, useState } from 'react';
 
 interface ExportModalProps {
   prisma: string;
   onClose: () => void;
 }
 
-export default function ExportModal({
-  prisma,
-  onClose,
-}: ExportModalProps) {
+export default function ExportModal({ prisma, onClose }: ExportModalProps) {
   const [copied, setCopied] = useState(false);
 
-    async function handleCopy() {
-        await navigator.clipboard.writeText(prisma);
-        setCopied(true);
-        setTimeout(() => {
-            setCopied(false);
-        }, 2000);
-    }
+  async function handleCopy() {
+    await navigator.clipboard.writeText(prisma);
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  }
 
   function handleDownload() {
     const blob = new Blob([prisma], {
-      type: "text/plain",
+      type: 'text/plain',
     });
 
     const url = URL.createObjectURL(blob);
 
-    const a = document.createElement("a");
+    const a = document.createElement('a');
 
     a.href = url;
-    a.download = "schema.prisma";
+    a.download = 'schema.prisma';
     a.click();
 
     URL.revokeObjectURL(url);
   }
 
   useEffect(() => {
-  function handleKeyDown(e: KeyboardEvent) {
-    if (e.key === "Escape") {
-      onClose();
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        onClose();
+      }
     }
-  }
 
-  window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
 
-  return () =>
-    window.removeEventListener("keydown", handleKeyDown);
-}, [onClose]);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   return (
     <div
@@ -74,7 +70,6 @@ export default function ExportModal({
           shadow-2xl
         "
       >
-
         {/* Header */}
 
         <div
@@ -89,7 +84,8 @@ export default function ExportModal({
           "
         >
           <div className="flex items-center border-b border-zinc-800">
-            <div className="
+            <div
+              className="
             flex
             items-center
             gap-2
@@ -98,14 +94,10 @@ export default function ExportModal({
             bg-zinc-900
             px-4
             py-3
-            ">
-                <FileCode
-                size={16}
-                className="text-sky-400"
-                />
-                    <span className="text-sm text-zinc-200">
-                        schema.prisma
-                    </span>
+            "
+            >
+              <FileCode size={16} className="text-sky-400" />
+              <span className="text-sm text-zinc-200">schema.prisma</span>
             </div>
           </div>
 
@@ -127,11 +119,9 @@ export default function ExportModal({
         {/* Code */}
 
         <div className="flex-1 overflow-auto bg-zinc-950">
-
           <div className="flex-1 overflow-auto bg-zinc-950">
             <CodeViewer code={prisma} />
           </div>
-
         </div>
 
         {/* Footer */}
@@ -146,7 +136,6 @@ export default function ExportModal({
             p-5
           "
         >
-
           <button
             onClick={handleCopy}
             className="
@@ -165,10 +154,8 @@ export default function ExportModal({
               hover:text-white
             "
           >
-            <Copy size={16}/>
-            {copied
-                ? "Copied!"
-                : "Copy"}
+            <Copy size={16} />
+            {copied ? 'Copied!' : 'Copy'}
           </button>
 
           <button
@@ -192,9 +179,7 @@ export default function ExportModal({
             <Download size={16} />
             Download
           </button>
-
         </div>
-
       </div>
     </div>
   );

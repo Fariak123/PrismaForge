@@ -1,45 +1,33 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState } from 'react';
 
-import type {
-  Table,
-  Relationship,
-} from "../../entities/schema/schema.types";
+import type { Table, Relationship } from '../../entities/schema/schema.types';
 
-import type { ValidationIssue } from "./validation.types";
+import type { ValidationIssue } from './validation.types';
 
-import { validateSchema } from "./schema.validator";
+import { validateSchema } from './schema.validator';
 
-export function useValidation(
-  tables: Table[],
-  relationships: Relationship[]
-) {
-  const [issues, setIssues] =
-    useState<ValidationIssue[]>([]);
+export function useValidation(tables: Table[], relationships: Relationship[]) {
+  const [issues, _setIssues] = useState<ValidationIssue[]>([]);
 
-  const [showIssues, setShowIssues] =
-    useState(false);
+  const [showIssues, setShowIssues] = useState(false);
 
-  const [pendingAction, setPendingAction] =
-    useState<(() => void) | null>(null);
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
-  const validate = useCallback(
-    (action: () => void) => {
-      const result = validateSchema(
-        tables,
-        relationships
-      );
+  const validate = useCallback(() => {
+    const issues = validateSchema(tables, relationships);
 
-      if (result.length > 0) {
-        setIssues(result);
-        setPendingAction(() => action);
-        setShowIssues(true);
-        return;
-      }
+    if (issues.length > 0) {
+      return {
+        success: false,
+        issues,
+      };
+    }
 
-      action();
-    },
-    [tables, relationships]
-  );
+    return {
+      success: true,
+      issues: [],
+    };
+  }, [tables, relationships]);
 
   const continueAction = useCallback(() => {
     setShowIssues(false);

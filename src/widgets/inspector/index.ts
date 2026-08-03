@@ -1,1 +1,1 @@
-export { default } from "./Inspector";
+export { default } from './Inspector';

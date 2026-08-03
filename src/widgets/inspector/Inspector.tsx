@@ -1,6 +1,9 @@
-import { useSelectedRelationship, useSelectedTable } from "../../features/canvas/editor.selectors";
-import RelationshipInspector from "./RelationshipInspector";
-import TableInspector from "./TableInspector";
+import {
+  useSelectedRelationship,
+  useSelectedTable,
+} from '../../features/canvas/editor.selectors';
+import RelationshipInspector from './RelationshipInspector';
+import TableInspector from './TableInspector';
 
 export default function Inspector() {
   const table = useSelectedTable();
@@ -8,7 +11,6 @@ export default function Inspector() {
 
   return (
     <aside className="absolute right-0 top-14 z-40 flex h-[calc(100vh-56px)] w-80 flex-col border-l border-zinc-800 bg-zinc-950">
-
       {relationship ? (
         <RelationshipInspector />
       ) : table ? (
@@ -18,7 +20,6 @@ export default function Inspector() {
           Select a table or relationship
         </div>
       )}
-
     </aside>
   );
 }

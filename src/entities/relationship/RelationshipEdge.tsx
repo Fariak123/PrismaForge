@@ -3,7 +3,7 @@ import {
   EdgeLabelRenderer,
   getSmoothStepPath,
   type EdgeProps,
-} from "@xyflow/react";
+} from '@xyflow/react';
 
 type RelationshipEdgeData = {
   relationshipType?: string;
@@ -27,19 +27,18 @@ export default function RelationshipEdge({
     targetPosition,
   });
 
-  const relationship =
-    data as RelationshipEdgeData | undefined;
+  const relationship = data as RelationshipEdgeData | undefined;
 
   return (
     <>
-      <BaseEdge path={path} style={{strokeWidth: 2, opacity: 0.8,}} />
+      <BaseEdge path={path} style={{ strokeWidth: 2, opacity: 0.8 }} />
 
       <EdgeLabelRenderer>
         <div
           style={{
-            position: "absolute",
+            position: 'absolute',
             transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-            pointerEvents: "none",
+            pointerEvents: 'none',
           }}
           className="
             rounded-md
@@ -52,7 +51,7 @@ export default function RelationshipEdge({
             text-zinc-300
           "
         >
-          {relationship?.relationshipType ?? "1:N"}
+          {relationship?.relationshipType ?? '1:N'}
         </div>
       </EdgeLabelRenderer>
     </>

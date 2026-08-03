@@ -1,50 +1,40 @@
-import type { Relationship, Table } from "./schema.types";
-import type { RelationshipEdge } from "../relationship/relationship.types";
-import type { Node } from "@xyflow/react";
-import type { TableNodeData } from "../table/table.types";
-
+import type { Relationship, Table } from './schema.types';
+import type { RelationshipEdge } from '../relationship/relationship.types';
+import type { Node } from '@xyflow/react';
+import type { TableNodeData } from '../table/table.types';
 
 export function relationshipsToEdges(
-  relationships: Relationship[]
+  relationships: Relationship[],
 ): RelationshipEdge[] {
-
   return relationships.map((relationship) => ({
     id: relationship.id,
 
     source: relationship.sourceTableId,
     target: relationship.targetTableId,
 
-    sourceHandle:
-      `source-${relationship.sourceColumnId}`,
+    sourceHandle: `source-${relationship.sourceColumnId}`,
 
-    targetHandle:
-      `target-${relationship.targetColumnId}`,
+    targetHandle: `target-${relationship.targetColumnId}`,
 
-    type: "relationship",
+    type: 'relationship',
 
     animated: true,
 
     data: {
-      relationshipType:
-        relationship.type,
+      relationshipType: relationship.type,
 
-      sourceColumnId:
-        relationship.sourceColumnId,
+      sourceColumnId: relationship.sourceColumnId,
 
-      targetColumnId:
-        relationship.targetColumnId,
+      targetColumnId: relationship.targetColumnId,
     },
   }));
 }
 
-export function tablesToNodes(
-  tables: Table[]
-): Node<TableNodeData>[] {
-
+export function tablesToNodes(tables: Table[]): Node<TableNodeData>[] {
   return tables.map((table) => ({
     id: table.id,
 
-    type: "table",
+    type: 'table',
 
     position: table.position,
 

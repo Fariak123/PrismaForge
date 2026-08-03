@@ -1,4 +1,4 @@
-import { createHighlighter } from "shiki";
+import { createHighlighter } from 'shiki';
 
 let highlighter: Awaited<ReturnType<typeof createHighlighter>> | null = null;
 
@@ -8,8 +8,8 @@ export async function getHighlighter() {
   }
 
   highlighter = await createHighlighter({
-    themes: ["tokyo-night"],
-    langs: ["prisma"],
+    themes: ['tokyo-night'],
+    langs: ['prisma'],
   });
 
   return highlighter;

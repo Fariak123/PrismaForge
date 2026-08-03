@@ -1,4 +1,4 @@
-import type { Node } from "@xyflow/react";
+import type { Node } from '@xyflow/react';
 
 export interface TableColumn {
   id: string;
@@ -15,12 +15,6 @@ export interface TableNodeData extends Record<string, unknown> {
   columns: TableColumn[];
 }
 
-export type TableNodeType = Node<TableNodeData, "table">;
+export type TableNodeType = Node<TableNodeData, 'table'>;
 
-export type DataType =
-  | "String"
-  | "Int"
-  | "Boolean"
-  | "DateTime"
-  | "Json";
-
+export type DataType = 'String' | 'Int' | 'Boolean' | 'DateTime' | 'Json';

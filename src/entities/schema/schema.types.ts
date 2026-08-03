@@ -1,6 +1,4 @@
-import type {
-  TableColumn
-} from "../table/table.types";
+import type { TableColumn } from '../table/table.types';
 
 export interface Position {
   x: number;
@@ -16,10 +14,7 @@ export interface Table {
   columns: TableColumn[];
 }
 
-export type RelationshipType =
-  | "one-to-one"
-  | "one-to-many"
-  | "many-to-many";
+export type RelationshipType = 'one-to-one' | 'one-to-many' | 'many-to-many';
 
 export interface Relationship {
   id: string;

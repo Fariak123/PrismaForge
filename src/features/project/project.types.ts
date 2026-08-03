@@ -1,7 +1,4 @@
-import type {
-  Relationship,
-  Table,
-} from "../../entities/schema/schema.types";
+import type { Relationship, Table } from '../../entities/schema/schema.types';
 
 export interface PrismaForgeProject {
   version: 1;

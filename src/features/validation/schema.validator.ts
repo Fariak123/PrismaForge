@@ -1,18 +1,13 @@
-import type { Table } from "../../entities/schema/schema.types";
-import type { Relationship } from "../../entities/schema/schema.types";
+import type { Table } from '../../entities/schema/schema.types';
+import type { Relationship } from '../../entities/schema/schema.types';
 
-import type {
-  ValidationIssue,
-} from "./validation.types";
-
+import type { ValidationIssue } from './validation.types';
 
 export function validateSchema(
   tables: Table[],
-  relationships: Relationship[]
+  relationships: Relationship[],
 ): ValidationIssue[] {
-
   const issues: ValidationIssue[] = [];
-
 
   /*
     Duplicate table names
@@ -20,42 +15,25 @@ export function validateSchema(
 
   const tableNames = new Map<string, Table[]>();
 
-
   for (const table of tables) {
-
-    const existing =
-      tableNames.get(table.name) ?? [];
-
+    const existing = tableNames.get(table.name) ?? [];
 
     existing.push(table);
 
-    tableNames.set(
-      table.name,
-      existing
-    );
+    tableNames.set(table.name, existing);
   }
 
-
-  for (const [
-    _name,
-    duplicatedTables
-  ] of tableNames) {
-
-
+  for (const [_name, duplicatedTables] of tableNames) {
     if (duplicatedTables.length > 1) {
-
-      duplicatedTables.forEach(table => {
-
+      duplicatedTables.forEach((table) => {
         issues.push({
           id: crypto.randomUUID(),
 
-          severity: "error",
+          severity: 'error',
 
-          message:
-            "Duplicate table name",
+          message: 'Duplicate table name',
 
-          tableId:
-            table.id,
+          tableId: table.id,
 
           tableRefs: [
             {
@@ -64,41 +42,26 @@ export function validateSchema(
             },
           ],
         });
-
       });
-
     }
-
   }
-
-
 
   /*
     Primary key check
   */
 
   for (const table of tables) {
-
-    const hasPrimaryKey =
-      table.columns.some(
-        column =>
-          column.primaryKey
-      );
-
+    const hasPrimaryKey = table.columns.some((column) => column.primaryKey);
 
     if (!hasPrimaryKey) {
-
       issues.push({
-
         id: crypto.randomUUID(),
 
-        severity: "warning",
+        severity: 'warning',
 
-        message:
-          "Table has no primary key",
+        message: 'Table has no primary key',
 
-        tableId:
-          table.id,
+        tableId: table.id,
 
         tableRefs: [
           {
@@ -106,70 +69,35 @@ export function validateSchema(
             name: table.name,
           },
         ],
-
       });
-
     }
-
   }
-
-
 
   /*
     Duplicate columns
   */
 
   for (const table of tables) {
-
-
-    const columns =
-      new Map<string, typeof table.columns>();
-
+    const columns = new Map<string, typeof table.columns>();
 
     for (const column of table.columns) {
-
-
-      const existing =
-        columns.get(column.name)
-        ?? [];
-
+      const existing = columns.get(column.name) ?? [];
 
       existing.push(column);
 
-
-      columns.set(
-        column.name,
-        existing
-      );
-
+      columns.set(column.name, existing);
     }
 
-
-
-    for (const [
-      _name,
-      duplicatedColumns
-    ] of columns) {
-
-
-      if (
-        duplicatedColumns.length > 1
-      ) {
-
+    for (const [_name, duplicatedColumns] of columns) {
+      if (duplicatedColumns.length > 1) {
         issues.push({
+          id: crypto.randomUUID(),
 
-          id:
-            crypto.randomUUID(),
+          severity: 'error',
 
-          severity:
-            "error",
+          message: 'Duplicate column name',
 
-          message:
-            "Duplicate column name",
-
-          tableId:
-            table.id,
-
+          tableId: table.id,
 
           tableRefs: [
             {
@@ -178,107 +106,56 @@ export function validateSchema(
             },
           ],
 
-
-          columnRefs:
-            duplicatedColumns.map(
-              column => ({
-                id: column.id,
-                name: column.name,
-                tableId: table.id,
-              })
-            ),
-
+          columnRefs: duplicatedColumns.map((column) => ({
+            id: column.id,
+            name: column.name,
+            tableId: table.id,
+          })),
         });
-
       }
-
     }
-
   }
-
-
 
   /*
     Relationship validation
   */
 
-
   for (const relation of relationships) {
+    const source = tables.find((table) => table.id === relation.sourceTableId);
 
-
-    const source =
-      tables.find(
-        table =>
-          table.id ===
-          relation.sourceTableId
-      );
-
-
-    const target =
-      tables.find(
-        table =>
-          table.id ===
-          relation.targetTableId
-      );
-
+    const target = tables.find((table) => table.id === relation.targetTableId);
 
     if (!source || !target) {
-
       issues.push({
+        id: crypto.randomUUID(),
 
-        id:
-          crypto.randomUUID(),
+        severity: 'error',
 
-        severity:
-          "error",
+        message: 'Relationship points to missing table',
 
-        message:
-          "Relationship points to missing table",
-
-        relationshipId:
-          relation.id,
-
+        relationshipId: relation.id,
       });
-
 
       continue;
     }
 
+    const sourceColumn = source.columns.find(
+      (column) => column.id === relation.sourceColumnId,
+    );
 
-
-    const sourceColumn =
-      source.columns.find(
-        column =>
-          column.id ===
-          relation.sourceColumnId
-      );
-
-
-    const targetColumn =
-      target.columns.find(
-        column =>
-          column.id ===
-          relation.targetColumnId
-      );
-
-
+    const targetColumn = target.columns.find(
+      (column) => column.id === relation.targetColumnId,
+    );
 
     if (!sourceColumn) {
-
       issues.push({
+        id: crypto.randomUUID(),
 
-        id:
-          crypto.randomUUID(),
+        severity: 'error',
 
-        severity:
-          "error",
+        message: 'Relationship source column is missing',
 
-        message:
-          "Relationship source column is missing",
-
-        relationshipId:
-          relation.id,
-
+        relationshipId: relation.id,
 
         tableRefs: [
           {
@@ -286,30 +163,18 @@ export function validateSchema(
             name: source.name,
           },
         ],
-
       });
-
     }
 
-
-
     if (!targetColumn) {
-
       issues.push({
+        id: crypto.randomUUID(),
 
-        id:
-          crypto.randomUUID(),
+        severity: 'error',
 
-        severity:
-          "error",
+        message: 'Relationship target column is missing',
 
-        message:
-          "Relationship target column is missing",
-
-
-        relationshipId:
-          relation.id,
-
+        relationshipId: relation.id,
 
         tableRefs: [
           {
@@ -317,36 +182,22 @@ export function validateSchema(
             name: target.name,
           },
         ],
-
       });
-
     }
-
-
 
     if (
       sourceColumn &&
       targetColumn &&
       sourceColumn.type !== targetColumn.type
     ) {
-
-
       issues.push({
+        id: crypto.randomUUID(),
 
-        id:
-          crypto.randomUUID(),
+        severity: 'warning',
 
-        severity:
-          "warning",
+        message: 'Relationship column types do not match',
 
-
-        message:
-          "Relationship column types do not match",
-
-
-        relationshipId:
-          relation.id,
-
+        relationshipId: relation.id,
 
         tableRefs: [
           {
@@ -358,7 +209,6 @@ export function validateSchema(
             name: target.name,
           },
         ],
-
 
         columnRefs: [
           {
@@ -372,14 +222,9 @@ export function validateSchema(
             tableId: target.id,
           },
         ],
-
       });
-
     }
-
   }
-
-
 
   return issues;
 }
