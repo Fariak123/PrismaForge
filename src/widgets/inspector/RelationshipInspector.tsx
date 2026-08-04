@@ -1,6 +1,7 @@
 import { useSelectedRelationship } from '../../features/canvas/editor.selectors';
 import { useSchemaStore } from '../../entities/schema/schema.store';
-import type { Relationship } from '../../entities/schema/schema.types';
+import type { ReferentialAction, Relationship } from '../../entities/schema/schema.types';
+import Select from '../../app/components/ui/Select';
 
 export default function RelationshipInspector() {
   const relationship = useSelectedRelationship();
@@ -37,7 +38,7 @@ export default function RelationshipInspector() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b border-zinc-800 p-5">
+      <div className="border-b border-t border-zinc-800 p-5">
         <h2 className="text-lg font-semibold text-white">Relationship</h2>
       </div>
 
@@ -72,7 +73,7 @@ export default function RelationshipInspector() {
         ))}
       </div>
 
-      <div className="flex-1 space-y-4 overflow-y-auto p-5">
+      <div className="flex-1 overflow-y-auto p-5">
         <div>
           <label className="text-xs uppercase tracking-wide text-zinc-500">
             Source
@@ -83,7 +84,7 @@ export default function RelationshipInspector() {
           </div>
         </div>
 
-        <div className="text-center text-zinc-500">↓</div>
+        <div className="text-center text-zinc-500 pt-4">↓</div>
 
         <div>
           <label className="text-xs uppercase tracking-wide text-zinc-500">
@@ -94,6 +95,104 @@ export default function RelationshipInspector() {
             {targetTable?.name}.{targetColumn?.name}
           </div>
         </div>
+        <div className="space-y-4 pt-8">
+
+  <div>
+    <label className="
+      text-xs
+      uppercase
+      tracking-wide
+      text-zinc-500
+    ">
+      On Delete
+    </label>
+
+    <Select
+      value={
+        relationship.onDelete ?? 'Cascade'
+      }
+      options={[
+        'Cascade',
+        'Restrict',
+        'NoAction',
+        'SetNull',
+        'SetDefault',
+      ]}
+      onChange={(value) =>
+        updateRelationship(
+          relationship.id,
+          {
+            onDelete:
+              value as ReferentialAction,
+          }
+        )
+      }
+    />
+  </div>
+
+
+  <div>
+    <label className="
+      text-xs
+      uppercase
+      tracking-wide
+      text-zinc-500
+    ">
+      On Update
+    </label>
+
+    <Select
+      value={
+        relationship.onUpdate ?? 'Cascade'
+      }
+      options={[
+        'Cascade',
+        'Restrict',
+        'NoAction',
+        'SetNull',
+        'SetDefault',
+      ]}
+      onChange={(value) =>
+        updateRelationship(
+          relationship.id,
+          {
+            onUpdate:
+              value as ReferentialAction,
+          }
+        )
+      }
+    />
+  </div>
+
+</div>
+<label
+ className="
+ flex
+ items-center
+ gap-3
+ text-sm
+ text-zinc-300
+ pt-4
+ "
+>
+<input
+ type="checkbox"
+ checked={
+   relationship.optional ?? false
+ }
+ onChange={(e)=>
+   updateRelationship(
+     relationship.id,
+     {
+       optional:e.target.checked
+     }
+   )
+ }
+/>
+
+Optional relation
+
+</label>
       </div>
 
       <div className="border-t border-zinc-800 p-5">

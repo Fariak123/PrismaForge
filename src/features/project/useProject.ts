@@ -6,6 +6,17 @@ import { downloadProject, openProject } from './project.service';
 import type { ValidationIssue } from '../validation/validation.types';
 
 export function useProject() {
+  const loadDemo = async () => {
+    const response =
+      await fetch("/demo.prismaforge");
+
+    const project =
+      await response.json();
+
+    replaceSnapshot(project);
+
+  };
+
   const [prismaViewerOpen, setPrismaViewerOpen] = useState(false);
 
   const prismaGenerateSchema = () => {
@@ -66,6 +77,7 @@ export function useProject() {
     clearSchema,
     isDirty,
     markSaved,
+    replaceSnapshot
   } = useSchemaStore();
 
   const { validate } = useValidation(tables, relationships);
@@ -209,6 +221,8 @@ export function useProject() {
   };
 
   return {
+    loadDemo,
+
     prismaViewerOpen,
 
     setPrismaViewerOpen,

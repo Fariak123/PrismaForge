@@ -36,10 +36,15 @@ import type { SchemaSnapshot } from '../../entities/history/history.types';
 import { useHistoryStore } from '../../entities/history/history.store';
 import { autoLayout } from '../../features/layout/autoLayout';
 import FloatingActions from '../../features/floatingActions/FloatingActions';
+import type { StartupAction } from '../../App';
 
 const nodeTypes = {
   table: TableNode,
 };
+
+interface Props {
+    startupAction: StartupAction | null;
+}
 
 export function focusTable(
   table: Table,
@@ -54,7 +59,7 @@ export function focusTable(
   });
 }
 
-export default function Canvas() {
+export default function Canvas({startupAction}: Props) {
   const reactFlow = useReactFlow();
 
   const tables = useSchemaStore((s) => s.tables);
@@ -132,6 +137,12 @@ export default function Canvas() {
       targetColumnId: connection.targetHandle.replace('target-', ''),
 
       type: 'one-to-many',
+
+      onDelete: 'Cascade',
+
+      onUpdate: 'Cascade',
+
+      optional: false,
     });
   };
 
@@ -272,6 +283,23 @@ const handleCenter = () => {
 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedTable, selectedRelationship, deleteTable, deleteRelationship]);
+
+  useEffect(() => {
+    switch (startupAction) {
+        case "open":
+            project.pickProject();
+            break;
+
+        case "demo":
+            project.loadDemo();
+            break;
+
+        case "new":
+            project.newProject();
+            break;
+    }
+
+}, [startupAction]);
 
   return (
     <div className="relative h-screen w-screen bg-zinc-950">

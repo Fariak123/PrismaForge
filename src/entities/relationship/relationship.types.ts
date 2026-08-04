@@ -3,7 +3,7 @@ import type { Edge } from '@xyflow/react';
 export type RelationshipType = 'one-to-one' | 'one-to-many' | 'many-to-many';
 
 export interface RelationshipData extends Record<string, unknown> {
-  relationshipType: RelationshipType;
+  type: RelationshipType;
 
   sourceColumnId: string;
   targetColumnId: string;

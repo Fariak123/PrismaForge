@@ -26,9 +26,23 @@ export interface Relationship {
   targetColumnId: string;
 
   type: RelationshipType;
+
+  onDelete?: ReferentialAction;
+
+  onUpdate?: ReferentialAction;
+
+  optional?: boolean;
 }
 
 export interface Schema {
   tables: Table[];
   relationships: Relationship[];
 }
+
+export type ReferentialAction =
+  | 'Cascade'
+  | 'Restrict'
+  | 'NoAction'
+  | 'SetNull'
+  | 'SetDefault';
+

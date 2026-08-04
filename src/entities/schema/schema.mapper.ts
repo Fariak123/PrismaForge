@@ -21,7 +21,7 @@ export function relationshipsToEdges(
     animated: true,
 
     data: {
-      relationshipType: relationship.type,
+      type: relationship.type,
 
       sourceColumnId: relationship.sourceColumnId,
 

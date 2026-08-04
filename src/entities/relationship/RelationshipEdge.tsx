@@ -4,10 +4,25 @@ import {
   getSmoothStepPath,
   type EdgeProps,
 } from '@xyflow/react';
+import type { RelationshipData, RelationshipType } from './relationship.types';
 
-type RelationshipEdgeData = {
-  relationshipType?: string;
-};
+function relationshipLabel(
+  type: RelationshipType
+) {
+  switch(type){
+
+    case 'one-to-one':
+      return '1:1';
+
+    case 'one-to-many':
+      return '1:N';
+
+    case 'many-to-many':
+      return 'N:N';
+    default:
+      return undefined;
+  }
+}
 
 export default function RelationshipEdge({
   sourceX,
@@ -27,7 +42,7 @@ export default function RelationshipEdge({
     targetPosition,
   });
 
-  const relationship = data as RelationshipEdgeData | undefined;
+  const relationship = data as RelationshipData | undefined;
 
   return (
     <>
@@ -40,7 +55,8 @@ export default function RelationshipEdge({
             transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
             pointerEvents: 'none',
           }}
-          className="
+          className={`
+          ${relationship && `
             rounded-md
             border
             border-zinc-700
@@ -48,10 +64,12 @@ export default function RelationshipEdge({
             px-2
             py-1
             text-xs
-            text-zinc-300
-          "
+            text-zinc-300`}
+          `}
         >
-          {relationship?.relationshipType ?? '1:N'}
+          {relationship?.type
+            ? relationshipLabel(relationship.type)
+            : ''}
         </div>
       </EdgeLabelRenderer>
     </>
