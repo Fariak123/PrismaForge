@@ -15,7 +15,7 @@ import TableNode from '../../entities/table/TableNode';
 import Toolbar from '../toolbar';
 import Inspector from '../inspector';
 import RelationshipEdge from '../../entities/relationship/RelationshipEdge';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { generatePrisma } from '../../features/export/prisma.generator';
 import { useSchemaStore } from '../../entities/schema/schema.store';
 import {
@@ -33,6 +33,8 @@ import type { Table } from '../../entities/schema';
 import { useProject } from '../../features/project/useProject';
 import DialogModal from '../dialog/DialogModal';
 import { useEditorStore } from '../../features/canvas/editor.store';
+import type { SchemaSnapshot } from '../../entities/history/history.types';
+import { useHistoryStore } from '../../entities/history/history.store';
 
 const nodeTypes = {
   table: TableNode,
@@ -162,6 +164,47 @@ export default function Canvas() {
   }, 350);
   }
 
+  const dragSnapshot = useRef<SchemaSnapshot>(null);
+
+  const handleNodeDragStart = () => {
+    dragSnapshot.current =
+      useSchemaStore
+        .getState()
+        .getSnapshot();
+  };
+
+  const handleNodeDragStop = () => {
+    if (!dragSnapshot.current) {
+        return;
+    }
+
+    const before =
+      dragSnapshot.current.tables;
+
+    const after =
+      useSchemaStore
+        .getState()
+        .tables;
+
+
+    const changed =
+      JSON.stringify(before)
+      !==
+      JSON.stringify(after);
+
+
+    if (changed) {
+      useHistoryStore
+        .getState()
+        .push(
+          dragSnapshot.current
+        );
+    }
+
+
+    dragSnapshot.current = null;
+  };
+
   useEffect(() => {
     setNodes(schemaNodes);
   }, [schemaNodes, setNodes]);
@@ -230,7 +273,7 @@ export default function Canvas() {
         onConfirm={project.dialog.onConfirm}
         onCancel={project.closeDialog}
       />
-      <Inspector />
+      <Inspector onFocusTable={handleFocusTable} />
       <div className="h-full pt-14 pr-80">
         <ReactFlow
           nodes={nodes}
@@ -253,11 +296,13 @@ export default function Canvas() {
           onConnect={handleConnect}
           onNodeDragStop={(_, node) => {
             moveTable(node.id, node.position.x, node.position.y);
+            handleNodeDragStop();
           }}
           onEdgeClick={(_, edge) => {
             selectRelationship(edge.id);
             selectTable(null);
           }}
+          onNodeDragStart={handleNodeDragStart}
         >
           <Background variant={BackgroundVariant.Dots} gap={24} size={1.2} />
 

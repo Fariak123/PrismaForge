@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import type { Table, Relationship } from '../../entities/schema';
 import type { TableColumn } from '../table/table.types';
+import type { SchemaSnapshot } from '../history/history.types';
+import { useHistoryStore } from '../history/history.store';
 
 interface SchemaStore {
   tables: Table[];
@@ -38,6 +40,9 @@ interface SchemaStore {
   loadProject: (tables: Table[], relationships: Relationship[]) => void;
 
   clearSchema: () => void;
+
+  getSnapshot: () => SchemaSnapshot;
+  replaceSnapshot: (snapshot: SchemaSnapshot) => void;
 }
 
 function getColumn(tables: Table[], tableId: string, columnId: string) {
@@ -46,7 +51,7 @@ function getColumn(tables: Table[], tableId: string, columnId: string) {
   return table?.columns.find((column) => column.id === columnId);
 }
 
-export const useSchemaStore = create<SchemaStore>((set) => ({
+export const useSchemaStore = create<SchemaStore>((set, get) => ({
   tables: [
     {
       id: 'user',
@@ -122,6 +127,12 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
       ],
     };
 
+    useHistoryStore
+        .getState()
+        .push(
+            get().getSnapshot()
+        );
+
     set((state) => ({
       tables: [...state.tables, table],
       isDirty: true,
@@ -143,7 +154,7 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
       isDirty: true,
     })),
 
-  renameTable: (id, name) =>
+  renameTable: (id, name) => {
     set((state) => ({
       tables: state.tables.map((table) =>
         table.id === id
@@ -154,9 +165,15 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
           : table,
       ),
       isDirty: true,
-    })),
+    }))},
 
-  deleteTable: (id) =>
+  deleteTable: (id) => {
+    useHistoryStore
+        .getState()
+        .push(
+            get().getSnapshot()
+        );
+
     set((state) => ({
       tables: state.tables.filter((table) => table.id !== id),
 
@@ -170,9 +187,15 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
         state.selectedTableId === id ? null : state.selectedTableId,
 
       isDirty: true,
-    })),
+    }))},
 
-  addColumn: (tableId) =>
+  addColumn: (tableId) => {
+    useHistoryStore
+        .getState()
+        .push(
+            get().getSnapshot()
+        );
+
     set((state) => ({
       tables: state.tables.map((table) =>
         table.id === tableId
@@ -193,9 +216,15 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
           : table,
       ),
       isDirty: true,
-    })),
+    }))},
 
-  updateColumn: (tableId, columnId, updates) =>
+  updateColumn: (tableId, columnId, updates) => {
+    useHistoryStore
+        .getState()
+        .push(
+            get().getSnapshot()
+        );
+
     set((state) => ({
       tables: state.tables.map((table) =>
         table.id === tableId
@@ -213,9 +242,15 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
           : table,
       ),
       isDirty: true,
-    })),
+    }))},
 
-  deleteColumn: (tableId, columnId) =>
+  deleteColumn: (tableId, columnId) => {
+    useHistoryStore
+        .getState()
+        .push(
+            get().getSnapshot()
+        );
+
     set((state) => ({
       tables: state.tables.map((table) =>
         table.id === tableId
@@ -226,9 +261,15 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
           : table,
       ),
       isDirty: true,
-    })),
+    }))},
 
-  addRelationship: (relationship) =>
+  addRelationship: (relationship) => {
+    useHistoryStore
+        .getState()
+        .push(
+            get().getSnapshot()
+        );
+
     set((state) => {
       const sourceColumn = getColumn(
         state.tables,
@@ -268,9 +309,15 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
         };
       }
       return state;
-    }),
+    })},
 
-  updateRelationship: (id, updates) =>
+  updateRelationship: (id, updates) => {
+    useHistoryStore
+        .getState()
+        .push(
+            get().getSnapshot()
+        );
+
     set((state) => ({
       relationships: state.relationships.map((relationship) =>
         relationship.id === id
@@ -281,14 +328,20 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
           : relationship,
       ),
       isDirty: true,
-    })),
+    }))},
 
-  deleteRelationship: (id) =>
+  deleteRelationship: (id) => {
+    useHistoryStore
+        .getState()
+        .push(
+            get().getSnapshot()
+        );
+
     set((state) => ({
       relationships: state.relationships.filter((r) => r.id !== id),
       selectedRelationshipId: null,
       isDirty: true,
-    })),
+    }))},
 
   loadProject: (tables, relationships) =>
     set({
@@ -310,5 +363,16 @@ export const useSchemaStore = create<SchemaStore>((set) => ({
       selectedRelationshipId: null,
 
       isDirty: false,
+    }),
+
+  getSnapshot: () => ({
+    tables: structuredClone(get().tables),
+    relationships: structuredClone(get().relationships),
+  }),
+
+  replaceSnapshot: (snapshot) =>
+    set({
+      tables: structuredClone(snapshot.tables),
+      relationships: structuredClone(snapshot.relationships),
     }),
 }));
