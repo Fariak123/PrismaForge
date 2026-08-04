@@ -1,7 +1,6 @@
 import {
   Background,
   BackgroundVariant,
-  Controls,
   MiniMap,
   ReactFlow,
   useNodesState,
@@ -35,6 +34,8 @@ import DialogModal from '../dialog/DialogModal';
 import { useEditorStore } from '../../features/canvas/editor.store';
 import type { SchemaSnapshot } from '../../entities/history/history.types';
 import { useHistoryStore } from '../../entities/history/history.store';
+import { autoLayout } from '../../features/layout/autoLayout';
+import FloatingActions from '../../features/floatingActions/FloatingActions';
 
 const nodeTypes = {
   table: TableNode,
@@ -201,9 +202,45 @@ export default function Canvas() {
         );
     }
 
-
     dragSnapshot.current = null;
   };
+
+  const handleAutoLayout = () => {
+    useHistoryStore
+      .getState()
+      .push(
+        useSchemaStore
+          .getState()
+          .getSnapshot()
+      )
+    const layouted =
+        autoLayout(
+            nodes,
+            edges
+        );
+
+    layouted.map((node => moveTable(node.id, node.position.x, node.position.y)))
+}
+
+const handleFitView = () => {
+    reactFlow.fitView({
+        duration: 700,
+
+        padding: 0.15,
+
+    });
+};
+
+const handleCenter = () => {
+    reactFlow.setCenter(
+        0,
+        0,
+        {
+            duration: 700,
+            zoom: 1,
+        }
+    );
+};
 
   useEffect(() => {
     setNodes(schemaNodes);
@@ -211,7 +248,6 @@ export default function Canvas() {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      // Don't delete while typing
       const target = e.target as HTMLElement;
       if (
         target.tagName === 'INPUT' ||
@@ -274,7 +310,7 @@ export default function Canvas() {
         onCancel={project.closeDialog}
       />
       <Inspector onFocusTable={handleFocusTable} />
-      <div className="h-full pt-14 pr-80">
+      <div className="relative h-full w-full pt-14 pr-80">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -305,15 +341,17 @@ export default function Canvas() {
           onNodeDragStart={handleNodeDragStart}
         >
           <Background variant={BackgroundVariant.Dots} gap={24} size={1.2} />
-
           <MiniMap pannable zoomable />
-
-          <Controls />
         </ReactFlow>
+
+        <FloatingActions
+          onAutoLayout={handleAutoLayout}
+          onFitView={handleFitView}
+          onCenter={handleCenter}
+        />
       </div>
       {project.issuesOpen && (
         <IssuesModal
-          //   open={project.issuesOpen}
           issues={project.issues}
           onClose={project.closeIssues}
           onContinue={project.forceSave}
