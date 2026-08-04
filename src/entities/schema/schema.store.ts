@@ -25,7 +25,7 @@ interface SchemaStore {
   renameTable: (id: string, name: string) => void;
   deleteTable: (id: string) => void;
 
-  addColumn: (tableId: string) => void;
+  addColumn: (tableId: string) => string;
   updateColumn: (
     tableId: string,
     columnId: string,
@@ -196,6 +196,7 @@ export const useSchemaStore = create<SchemaStore>((set, get) => ({
             get().getSnapshot()
         );
 
+    const columnId = crypto.randomUUID();
     set((state) => ({
       tables: state.tables.map((table) =>
         table.id === tableId
@@ -204,7 +205,7 @@ export const useSchemaStore = create<SchemaStore>((set, get) => ({
               columns: [
                 ...table.columns,
                 {
-                  id: crypto.randomUUID(),
+                  id: columnId,
                   name: 'new_column',
                   type: 'String',
                   primaryKey: false,
@@ -216,7 +217,9 @@ export const useSchemaStore = create<SchemaStore>((set, get) => ({
           : table,
       ),
       isDirty: true,
-    }))},
+    }))
+    return columnId;
+  },
 
   updateColumn: (tableId, columnId, updates) => {
     useHistoryStore

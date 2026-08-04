@@ -14,7 +14,7 @@ import TableNode from '../../entities/table/TableNode';
 import Toolbar from '../toolbar';
 import Inspector from '../inspector';
 import RelationshipEdge from '../../entities/relationship/RelationshipEdge';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { generatePrisma } from '../../features/export/prisma.generator';
 import { useSchemaStore } from '../../entities/schema/schema.store';
 import {
@@ -35,8 +35,10 @@ import { useEditorStore } from '../../features/canvas/editor.store';
 import type { SchemaSnapshot } from '../../entities/history/history.types';
 import { useHistoryStore } from '../../entities/history/history.store';
 import { autoLayout } from '../../features/layout/autoLayout';
-import FloatingActions from '../../features/floatingActions/FloatingActions';
+import FloatingActions from '../../features/floating-actions/FloatingActions';
 import type { StartupAction } from '../../App';
+import ContextMenu from '../context-menu/ContextMenu';
+import ContextMenuItem from '../context-menu/ContextMenuItem';
 
 const nodeTypes = {
   table: TableNode,
@@ -46,20 +48,13 @@ interface Props {
     startupAction: StartupAction | null;
 }
 
-export function focusTable(
-  table: Table,
-  setCenter: ReactFlowInstance['setCenter'],
-  selectTable: (id: string) => void,
-) {
-  selectTable(table.id);
-
-  setCenter(table.position.x + 150, table.position.y + 80, {
-    zoom: 1.2,
-    duration: 500,
-  });
-}
-
 export default function Canvas({startupAction}: Props) {
+  const [contextMenu, setContextMenu] =
+    useState<{
+      x:number;
+      y:number;
+      tableId?:string;
+    } | null>(null);
   const reactFlow = useReactFlow();
 
   const tables = useSchemaStore((s) => s.tables);
@@ -102,6 +97,8 @@ export default function Canvas({startupAction}: Props) {
   const addRelationship = useSchemaStore((s) => s.addRelationship);
 
   const moveTable = useSchemaStore((state) => state.moveTable);
+
+  const addColumn = useSchemaStore((s) => s.addColumn);
 
   const prisma = useMemo(
     () => generatePrisma(tables, relationships),
@@ -301,6 +298,26 @@ const handleCenter = () => {
 
 }, [startupAction]);
 
+    useEffect(()=>{
+
+ const close = () =>
+   setContextMenu(null);
+
+
+ window.addEventListener(
+   'blur',
+   close
+ );
+
+
+ return () =>
+ window.removeEventListener(
+   'blur',
+   close
+ );
+
+},[]);
+
   return (
     <div className="relative h-screen w-screen bg-zinc-950">
       <Toolbar
@@ -356,6 +373,7 @@ const handleCenter = () => {
           onPaneClick={() => {
             selectTable(null);
             selectRelationship(null);
+            setContextMenu(null);
           }}
           onConnect={handleConnect}
           onNodeDragStop={(_, node) => {
@@ -367,10 +385,128 @@ const handleCenter = () => {
             selectTable(null);
           }}
           onNodeDragStart={handleNodeDragStart}
+          onNodeContextMenu={(event, node) => {
+            event.preventDefault();
+            setContextMenu({
+                x: event.clientX,
+                y: event.clientY,
+                tableId: node.id,
+            });
+          }}
+          onPaneContextMenu={(event)=>{
+            event.preventDefault();
+              setContextMenu({
+                x:event.clientX,
+                y:event.clientY,
+          });
+
+}}
         >
           <Background variant={BackgroundVariant.Dots} gap={24} size={1.2} />
           <MiniMap pannable zoomable />
         </ReactFlow>
+
+        {
+contextMenu && (
+
+<ContextMenu
+ x={contextMenu.x}
+ y={contextMenu.y}
+>
+
+{
+contextMenu.tableId ? (
+
+<>
+
+<ContextMenuItem
+
+label="Add Column"
+
+onClick={()=>{
+  const columnId = addColumn(contextMenu.tableId!)
+  handleFocusColumn(contextMenu.tableId!, columnId);
+  setContextMenu(null);
+}}
+
+/>
+
+
+<ContextMenuItem
+
+label="Rename Table"
+
+onClick={()=>{
+  handleFocusTable(contextMenu.tableId!);
+  setContextMenu(null);
+}}
+
+/>
+
+
+<ContextMenuItem
+
+label="Delete Table"
+
+danger
+
+onClick={()=>{
+  deleteTable(contextMenu.tableId!)
+  setContextMenu(null);
+}}
+
+/>
+
+</>
+
+
+) : (
+
+<>
+
+<ContextMenuItem
+
+label="New Table"
+
+onClick={()=>{
+  const table = addTable();
+  selectTable(table.id);
+
+    reactFlow.setCenter(table.position.x + 150, table.position.y + 80, {
+      zoom: 1.2,
+      duration: 500,
+    });
+
+    setTimeout(() => {
+        highlightNode(table.id);
+    }, 350)
+  setContextMenu(null);
+}}
+
+/>
+
+
+<ContextMenuItem
+
+label="Auto Layout"
+
+onClick={()=>{
+  handleAutoLayout();
+  setContextMenu(null);
+}}
+
+/>
+
+</>
+
+)
+
+}
+
+</ContextMenu>
+
+)
+}
 
         <FloatingActions
           onAutoLayout={handleAutoLayout}
