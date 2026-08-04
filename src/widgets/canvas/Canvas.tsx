@@ -7,7 +7,6 @@ import {
   useReactFlow,
   type Connection,
   type Node,
-  type ReactFlowInstance,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import TableNode from '../../entities/table/TableNode';
@@ -28,7 +27,6 @@ import {
 } from '../../features/canvas/editor.selectors';
 import ExportModal from '../../widgets/export/ExportModal';
 import IssuesModal from '../issues/IssuesModal';
-import type { Table } from '../../entities/schema';
 import { useProject } from '../../features/project/useProject';
 import DialogModal from '../dialog/DialogModal';
 import { useEditorStore } from '../../features/canvas/editor.store';
@@ -39,6 +37,7 @@ import FloatingActions from '../../features/floating-actions/FloatingActions';
 import type { StartupAction } from '../../App';
 import ContextMenu from '../context-menu/ContextMenu';
 import ContextMenuItem from '../context-menu/ContextMenuItem';
+import { useKeyboardShortcuts } from '../../features/shortcuts/useKeyboardShortcuts';
 
 const nodeTypes = {
   table: TableNode,
@@ -62,6 +61,8 @@ export default function Canvas({startupAction}: Props) {
   const relationships = useSchemaStore((s) => s.relationships);
 
   const project = useProject();
+
+  const history = useHistoryStore()
 
   const isDirty = useSchemaStore((s) => s.isDirty);
 
@@ -317,6 +318,20 @@ const handleCenter = () => {
  );
 
 },[]);
+
+useKeyboardShortcuts({
+
+  save: project.saveProject,
+
+  open: project.pickProject,
+
+  undo: history.undo,
+
+  redo: history.redo,
+
+  fitView: handleFitView,
+
+});
 
   return (
     <div className="relative h-screen w-screen bg-zinc-950">
