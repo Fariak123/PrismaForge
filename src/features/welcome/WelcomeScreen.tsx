@@ -178,7 +178,7 @@ export default function WelcomeScreen({
           <ActionCard
             icon={<FolderOpen size={24} />}
             title="Open Project"
-            description="Open an existing .prismaforge project."
+            description="Open an existing .prismaforge project or your .prisma file."
             onClick={onOpenProject}
           />
 

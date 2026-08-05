@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 interface Shortcuts {
   save?: () => void;
+  newPorject?: () => void;
   open?: () => void;
   undo?: () => void;
   redo?: () => void;
@@ -12,6 +13,7 @@ interface Shortcuts {
 
 export function useKeyboardShortcuts({
   save,
+  newPorject,
   open,
   undo,
   redo,
@@ -42,6 +44,12 @@ export function useKeyboardShortcuts({
       if (ctrl && event.key === 's') {
         event.preventDefault();
         save?.();
+      }
+
+
+      if (ctrl && event.key === 'n') {
+        event.preventDefault();
+        newPorject?.();
       }
 
 

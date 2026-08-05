@@ -323,6 +323,8 @@ useKeyboardShortcuts({
 
   save: project.saveProject,
 
+  newPorject: project.newProject,
+
   open: project.pickProject,
 
   undo: history.undo,
