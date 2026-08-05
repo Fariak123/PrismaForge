@@ -3,74 +3,51 @@ import type { PrismaField, PrismaSchema } from './prisma.types';
 import { getArrayArgument } from './prisma.helpers';
 
 const SCALAR_TYPES = new Set([
-  "String",
-  "Int",
-  "BigInt",
-  "Float",
-  "Decimal",
-  "Boolean",
-  "DateTime",
-  "Bytes",
-  "Json",
+  'String',
+  'Int',
+  'BigInt',
+  'Float',
+  'Decimal',
+  'Boolean',
+  'DateTime',
+  'Bytes',
+  'Json',
 ]);
 
-function isRelationField(field:any){
-
-  const type =
-    unwrapType(field.type).type;
-
+function isRelationField(field: any) {
+  const type = unwrapType(field.type).type;
 
   return !SCALAR_TYPES.has(type);
-
 }
 
-function extractRelation(field:any) {
-
+function extractRelation(field: any) {
   const type = unwrapType(field.type);
-
 
   if (SCALAR_TYPES.has(type.type)) {
     return null;
   }
 
-
-  const relationAttribute =
-    field.attributes.find(
-      (attr:any)=>
-        attr.path.value[0] === 'relation'
-    );
-
+  const relationAttribute = field.attributes.find(
+    (attr: any) => attr.path.value[0] === 'relation',
+  );
 
   return {
-
     fieldName: field.name.value,
 
     targetModel: type.type,
 
-    sourceFields:
-      relationAttribute
-        ? getArrayArgument(
-            relationAttribute.args,
-            'fields'
-          )
-        : [],
+    sourceFields: relationAttribute
+      ? getArrayArgument(relationAttribute.args, 'fields')
+      : [],
 
-
-    targetFields:
-      relationAttribute
-        ? getArrayArgument(
-            relationAttribute.args,
-            'references'
-          )
-        : [],
-
+    targetFields: relationAttribute
+      ? getArrayArgument(relationAttribute.args, 'references')
+      : [],
 
     isList: type.list,
 
     optional: type.optional,
-
   };
-
 }
 
 function unwrapType(type: any) {
@@ -97,7 +74,6 @@ function unwrapType(type: any) {
 }
 
 function extractField(field: any): PrismaField {
-
   const attrs = field.attributes ?? [];
 
   const type = unwrapType(field.type);
@@ -106,7 +82,6 @@ function extractField(field: any): PrismaField {
     attrs.some((a: any) => a.path.value[0] === name);
 
   return {
-
     name: field.name.value,
 
     type: type.type,
@@ -117,50 +92,29 @@ function extractField(field: any): PrismaField {
 
     isArray: type.list,
 
-    isId: has("id"),
+    isId: has('id'),
 
-    isUnique: has("unique")
-    || has("id"),
-
+    isUnique: has('unique') || has('id'),
   };
 }
 
-function extractModel(model:any) {
-
-  const fields =
-    model.members
-      .filter(
-        (m:any)=>m.kind==='field'
-      );
-
+function extractModel(model: any) {
+  const fields = model.members.filter((m: any) => m.kind === 'field');
 
   return {
+    name: model.name.value,
 
-    name:
-      model.name.value,
-
-
-    fields:
-      fields
-      .filter(
-        (field:any)=>
-          !isRelationField(field)
-      )
+    fields: fields
+      .filter((field: any) => !isRelationField(field))
       .map(extractField),
 
-
-    relations:
-      fields
-      .map(extractRelation)
-      .filter(Boolean),
-
+    relations: fields.map(extractRelation).filter(Boolean),
   };
-
 }
 
 function extractSchema(ast: any): PrismaSchema {
   const models = ast.declarations
-    .filter((d: any) => d.kind === "model")
+    .filter((d: any) => d.kind === 'model')
     .map(extractModel);
 
   return {
@@ -168,12 +122,9 @@ function extractSchema(ast: any): PrismaSchema {
   };
 }
 
-export function parsePrisma(
-  content: string
-) {
-    const ast = parsePrismaSchema(content)
-    return extractSchema(ast)
+export function parsePrisma(content: string) {
+  const ast = parsePrismaSchema(content);
+  return extractSchema(ast);
 }
 
-export type ParsedPrismaSchema =
-  ReturnType<typeof parsePrisma>;
+export type ParsedPrismaSchema = ReturnType<typeof parsePrisma>;

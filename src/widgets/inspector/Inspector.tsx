@@ -1,22 +1,18 @@
 import {
   useSelectedRelationship,
   useSelectedTable,
-} from "../../features/canvas/editor.selectors";
-import SearchPanel from "./SearchPanel";
-import RelationshipInspector from "./RelationshipInspector";
-import TableInspector from "./TableInspector";
+} from '../../features/canvas/editor.selectors';
+import SearchPanel from './SearchPanel';
+import RelationshipInspector from './RelationshipInspector';
+import TableInspector from './TableInspector';
 
 interface Props {
   onFocusTable: (tableId: string) => void;
 }
 
-export default function Inspector({
-  onFocusTable,
-}: Props) {
-
+export default function Inspector({ onFocusTable }: Props) {
   const table = useSelectedTable();
-  const relationship =
-    useSelectedRelationship();
+  const relationship = useSelectedRelationship();
 
   return (
     <aside
@@ -34,13 +30,9 @@ export default function Inspector({
         bg-zinc-950
       "
     >
-
-      <SearchPanel
-        onSelect={onFocusTable}
-      />
+      <SearchPanel onSelect={onFocusTable} />
 
       <div className="flex-1 overflow-y-auto">
-
         {relationship ? (
           <RelationshipInspector />
         ) : table ? (
@@ -59,9 +51,7 @@ export default function Inspector({
             Select a table or relationship
           </div>
         )}
-
       </div>
-
     </aside>
   );
 }

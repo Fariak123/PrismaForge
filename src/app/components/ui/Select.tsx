@@ -4,12 +4,7 @@ interface Props {
   onChange: (value: string) => void;
 }
 
-export default function Select({
-  value,
-  options,
-  onChange,
-}: Props) {
-
+export default function Select({ value, options, onChange }: Props) {
   return (
     <select
       value={value}
@@ -28,11 +23,8 @@ export default function Select({
         focus:border-blue-500
       "
     >
-      {options.map(option => (
-        <option
-          key={option}
-          value={option}
-        >
+      {options.map((option) => (
+        <option key={option} value={option}>
           {option}
         </option>
       ))}

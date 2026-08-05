@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import type { SchemaSnapshot } from "./history.types";
-import { useSchemaStore } from "../schema/schema.store";
+import { create } from 'zustand';
+import type { SchemaSnapshot } from './history.types';
+import { useSchemaStore } from '../schema/schema.store';
 
 interface HistoryState {
   past: SchemaSnapshot[];
@@ -32,24 +32,16 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
 
     const schema = useSchemaStore.getState();
 
-    const current =
-        schema.getSnapshot();
+    const current = schema.getSnapshot();
 
-    const previous =
-        history.past.at(-1)!;
+    const previous = history.past.at(-1)!;
 
     schema.replaceSnapshot(previous);
 
     set({
+      past: history.past.slice(0, -1),
 
-        past:
-            history.past.slice(0, -1),
-
-        future: [
-            current,
-            ...history.future,
-        ],
-
+      future: [current, ...history.future],
     });
   },
 
@@ -58,27 +50,18 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
 
     if (history.future.length === 0) return;
 
-    const schema =
-        useSchemaStore.getState();
+    const schema = useSchemaStore.getState();
 
-    const current =
-        schema.getSnapshot();
+    const current = schema.getSnapshot();
 
-    const next =
-        history.future[0];
+    const next = history.future[0];
 
     schema.replaceSnapshot(next);
 
     set({
+      past: [...history.past, current],
 
-        past: [
-            ...history.past,
-            current,
-        ],
-
-        future:
-            history.future.slice(1),
-
+      future: history.future.slice(1),
     });
   },
 

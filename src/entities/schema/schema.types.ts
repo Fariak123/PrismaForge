@@ -40,9 +40,4 @@ export interface Schema {
 }
 
 export type ReferentialAction =
-  | 'Cascade'
-  | 'Restrict'
-  | 'NoAction'
-  | 'SetNull'
-  | 'SetDefault';
-
+  'Cascade' | 'Restrict' | 'NoAction' | 'SetNull' | 'SetDefault';

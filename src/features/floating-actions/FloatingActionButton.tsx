@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
 interface Props {
   icon: ReactNode;
@@ -6,11 +6,7 @@ interface Props {
   onClick: () => void;
 }
 
-export default function FloatingActionButton({
-  icon,
-  label,
-  onClick,
-}: Props) {
+export default function FloatingActionButton({ icon, label, onClick }: Props) {
   return (
     <button
       onClick={onClick}

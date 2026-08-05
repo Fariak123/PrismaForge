@@ -1,9 +1,4 @@
-import {
-  Sparkles,
-  FolderOpen,
-  BookOpen,
-  Database,
-} from 'lucide-react';
+import { Sparkles, FolderOpen, BookOpen, Database } from 'lucide-react';
 
 import ActionCard from './ActionCard';
 
@@ -84,7 +79,6 @@ export default function WelcomeScreen({
         {/* Header */}
 
         <div className="text-center">
-
           <div
             className="
               mx-auto
@@ -147,12 +141,9 @@ export default function WelcomeScreen({
               text-zinc-500
             "
           >
-            Design relational databases visually,
-            validate schemas,
-            and generate production-ready
-            Prisma models.
+            Design relational databases visually, validate schemas, and generate
+            production-ready Prisma models.
           </p>
-
         </div>
 
         {/* Cards */}
@@ -216,8 +207,14 @@ export default function WelcomeScreen({
           {/* <span>Ctrl + O • Open Project</span> */}
 
           <span>PrismaForge v1.0</span>
-          <span>Created by Fariak123 
-            <a className='text-blue-600 duration-150 hover:text-blue-400' href='https://github.com/Fariak123/PrismaForge'>{" [on github]"}</a>
+          <span>
+            Created by Fariak123
+            <a
+              className="text-blue-600 duration-150 hover:text-blue-400"
+              href="https://github.com/Fariak123/PrismaForge"
+            >
+              {' [on github]'}
+            </a>
           </span>
         </div>
       </div>

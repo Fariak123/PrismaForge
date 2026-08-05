@@ -24,18 +24,18 @@ export const useEditorStore = create<EditorStore>((set) => ({
       }, 1000);
     }
   },
-  
-  highlightColumn: (id) => {
-  set({
-    highlightedColumnId: id,
-  });
 
-  if (id) {
-    setTimeout(() => {
-      set({
-        highlightedColumnId: null,
-      });
-    }, 1000);
-  }
-},
+  highlightColumn: (id) => {
+    set({
+      highlightedColumnId: id,
+    });
+
+    if (id) {
+      setTimeout(() => {
+        set({
+          highlightedColumnId: null,
+        });
+      }, 1000);
+    }
+  },
 }));

@@ -6,11 +6,8 @@ import {
 } from '@xyflow/react';
 import type { RelationshipData, RelationshipType } from './relationship.types';
 
-function relationshipLabel(
-  type: RelationshipType
-) {
-  switch(type){
-
+function relationshipLabel(type: RelationshipType) {
+  switch (type) {
     case 'one-to-one':
       return '1:1';
 
@@ -56,7 +53,9 @@ export default function RelationshipEdge({
             pointerEvents: 'none',
           }}
           className={`
-          ${relationship && `
+          ${
+            relationship &&
+            `
             rounded-md
             border
             border-zinc-700
@@ -64,12 +63,11 @@ export default function RelationshipEdge({
             px-2
             py-1
             text-xs
-            text-zinc-300`}
+            text-zinc-300`
+          }
           `}
         >
-          {relationship?.type
-            ? relationshipLabel(relationship.type)
-            : ''}
+          {relationship?.type ? relationshipLabel(relationship.type) : ''}
         </div>
       </EdgeLabelRenderer>
     </>

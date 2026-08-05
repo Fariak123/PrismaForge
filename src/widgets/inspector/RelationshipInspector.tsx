@@ -1,6 +1,9 @@
 import { useSelectedRelationship } from '../../features/canvas/editor.selectors';
 import { useSchemaStore } from '../../entities/schema/schema.store';
-import type { ReferentialAction, Relationship } from '../../entities/schema/schema.types';
+import type {
+  ReferentialAction,
+  Relationship,
+} from '../../entities/schema/schema.types';
 import Select from '../../app/components/ui/Select';
 
 export default function RelationshipInspector() {
@@ -96,77 +99,66 @@ export default function RelationshipInspector() {
           </div>
         </div>
         <div className="space-y-4 pt-8">
-
-  <div>
-    <label className="
+          <div>
+            <label
+              className="
       text-xs
       uppercase
       tracking-wide
       text-zinc-500
-    ">
-      On Delete
-    </label>
+    "
+            >
+              On Delete
+            </label>
 
-    <Select
-      value={
-        relationship.onDelete ?? 'Cascade'
-      }
-      options={[
-        'Cascade',
-        'Restrict',
-        'NoAction',
-        'SetNull',
-        'SetDefault',
-      ]}
-      onChange={(value) =>
-        updateRelationship(
-          relationship.id,
-          {
-            onDelete:
-              value as ReferentialAction,
-          }
-        )
-      }
-    />
-  </div>
+            <Select
+              value={relationship.onDelete ?? 'Cascade'}
+              options={[
+                'Cascade',
+                'Restrict',
+                'NoAction',
+                'SetNull',
+                'SetDefault',
+              ]}
+              onChange={(value) =>
+                updateRelationship(relationship.id, {
+                  onDelete: value as ReferentialAction,
+                })
+              }
+            />
+          </div>
 
-
-  <div>
-    <label className="
+          <div>
+            <label
+              className="
       text-xs
       uppercase
       tracking-wide
       text-zinc-500
-    ">
-      On Update
-    </label>
+    "
+            >
+              On Update
+            </label>
 
-    <Select
-      value={
-        relationship.onUpdate ?? 'Cascade'
-      }
-      options={[
-        'Cascade',
-        'Restrict',
-        'NoAction',
-        'SetNull',
-        'SetDefault',
-      ]}
-      onChange={(value) =>
-        updateRelationship(
-          relationship.id,
-          {
-            onUpdate:
-              value as ReferentialAction,
-          }
-        )
-      }
-    />
-  </div>
-
-</div>
-<label
- className="
+            <Select
+              value={relationship.onUpdate ?? 'Cascade'}
+              options={[
+                'Cascade',
+                'Restrict',
+                'NoAction',
+                'SetNull',
+                'SetDefault',
+              ]}
+              onChange={(value) =>
+                updateRelationship(relationship.id, {
+                  onUpdate: value as ReferentialAction,
+                })
+              }
+            />
+          </div>
+        </div>
+        <label
+          className="
  flex
  items-center
  gap-3
@@ -174,25 +166,18 @@ export default function RelationshipInspector() {
  text-zinc-300
  pt-4
  "
->
-<input
- type="checkbox"
- checked={
-   relationship.optional ?? false
- }
- onChange={(e)=>
-   updateRelationship(
-     relationship.id,
-     {
-       optional:e.target.checked
-     }
-   )
- }
-/>
-
-Optional relation
-
-</label>
+        >
+          <input
+            type="checkbox"
+            checked={relationship.optional ?? false}
+            onChange={(e) =>
+              updateRelationship(relationship.id, {
+                optional: e.target.checked,
+              })
+            }
+          />
+          Optional relation
+        </label>
       </div>
 
       <div className="border-t border-zinc-800 p-5">

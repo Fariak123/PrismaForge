@@ -7,24 +7,17 @@ import type { ValidationIssue } from '../validation/validation.types';
 import { parsePrisma } from '../prisma-import/prisma.parser';
 import { prismaToSnapshot } from '../prisma-import/schemaToSnapshot';
 
-type PendingAction =
-  | 'save-project'
-  | 'generate-prisma'
-  | null;
+type PendingAction = 'save-project' | 'generate-prisma' | null;
 
 export function useProject() {
-  
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
 
   const loadDemo = async () => {
-    const response =
-      await fetch("/demo.prismaforge");
+    const response = await fetch('/demo.prismaforge');
 
-    const project =
-      await response.json();
+    const project = await response.json();
 
     replaceSnapshot(project);
-
   };
 
   const [prismaViewerOpen, setPrismaViewerOpen] = useState(false);
@@ -64,7 +57,7 @@ export function useProject() {
     clearSchema,
     isDirty,
     markSaved,
-    replaceSnapshot
+    replaceSnapshot,
   } = useSchemaStore();
 
   const { validate } = useValidation(tables, relationships);
@@ -143,7 +136,7 @@ export function useProject() {
 
       case 'generate-prisma':
         setPrismaViewerOpen(true);
-          break;
+        break;
     }
 
     setPendingAction(null);
@@ -159,7 +152,7 @@ export function useProject() {
     const extension = file.name.split('.').pop()?.toLowerCase();
     const text = await file.text();
     try {
-      switch(extension) {
+      switch (extension) {
         case 'prismaforge':
           const project = await openProject(file);
           loadProject(project.tables, project.relationships);
@@ -168,15 +161,15 @@ export function useProject() {
           const prisma = parsePrisma(text);
           const snapshot = prismaToSnapshot(prisma);
           replaceSnapshot(snapshot);
-          break
+          break;
       }
 
       requestAnimationFrame(() => {
-            reactFlow.fitView({
-              duration: 500,
-              padding: 0.2,
-            });
-          });
+        reactFlow.fitView({
+          duration: 500,
+          padding: 0.2,
+        });
+      });
     } catch {
       showDialog({
         open: true,
@@ -230,6 +223,8 @@ export function useProject() {
   };
 
   return {
+    reactFlow,
+
     setPendingAction,
 
     loadDemo,

@@ -1,67 +1,44 @@
-import dagre from "@dagrejs/dagre";
-import type { Node, Edge } from "@xyflow/react";
+import dagre from '@dagrejs/dagre';
+import type { Node, Edge } from '@xyflow/react';
 
 const dagreGraph = new dagre.graphlib.Graph();
 
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-export function autoLayout(
-    nodes: Node[],
-    edges: Edge[],
-) {
+export function autoLayout(nodes: Node[], edges: Edge[]) {
+  dagreGraph.setGraph({
+    rankdir: 'LR',
 
-    dagreGraph.setGraph({
+    ranksep: 180,
 
-        rankdir: "LR",
+    nodesep: 80,
+  });
 
-        ranksep: 180,
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, {
+      width: 260,
 
-        nodesep: 80,
-
+      height: 180,
     });
+  });
 
-    nodes.forEach(node => {
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
 
-        dagreGraph.setNode(node.id, {
+  dagre.layout(dagreGraph);
 
-            width: 260,
+  return nodes.map((node) => {
+    const pos = dagreGraph.node(node.id);
 
-            height: 180,
+    return {
+      ...node,
 
-        });
+      position: {
+        x: pos.x - 130,
 
-    });
-
-    edges.forEach(edge => {
-
-        dagreGraph.setEdge(
-            edge.source,
-            edge.target
-        );
-
-    });
-
-    dagre.layout(dagreGraph);
-
-    return nodes.map(node => {
-
-        const pos =
-            dagreGraph.node(node.id);
-
-        return {
-
-            ...node,
-
-            position: {
-
-                x: pos.x - 130,
-
-                y: pos.y - 90,
-
-            },
-
-        };
-
-    });
-
+        y: pos.y - 90,
+      },
+    };
+  });
 }

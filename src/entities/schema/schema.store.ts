@@ -127,11 +127,7 @@ export const useSchemaStore = create<SchemaStore>((set, get) => ({
       ],
     };
 
-    useHistoryStore
-        .getState()
-        .push(
-            get().getSnapshot()
-        );
+    useHistoryStore.getState().push(get().getSnapshot());
 
     set((state) => ({
       tables: [...state.tables, table],
@@ -165,14 +161,11 @@ export const useSchemaStore = create<SchemaStore>((set, get) => ({
           : table,
       ),
       isDirty: true,
-    }))},
+    }));
+  },
 
   deleteTable: (id) => {
-    useHistoryStore
-        .getState()
-        .push(
-            get().getSnapshot()
-        );
+    useHistoryStore.getState().push(get().getSnapshot());
 
     set((state) => ({
       tables: state.tables.filter((table) => table.id !== id),
@@ -187,14 +180,11 @@ export const useSchemaStore = create<SchemaStore>((set, get) => ({
         state.selectedTableId === id ? null : state.selectedTableId,
 
       isDirty: true,
-    }))},
+    }));
+  },
 
   addColumn: (tableId) => {
-    useHistoryStore
-        .getState()
-        .push(
-            get().getSnapshot()
-        );
+    useHistoryStore.getState().push(get().getSnapshot());
 
     const columnId = crypto.randomUUID();
     set((state) => ({
@@ -217,16 +207,12 @@ export const useSchemaStore = create<SchemaStore>((set, get) => ({
           : table,
       ),
       isDirty: true,
-    }))
+    }));
     return columnId;
   },
 
   updateColumn: (tableId, columnId, updates) => {
-    useHistoryStore
-        .getState()
-        .push(
-            get().getSnapshot()
-        );
+    useHistoryStore.getState().push(get().getSnapshot());
 
     set((state) => ({
       tables: state.tables.map((table) =>
@@ -245,14 +231,11 @@ export const useSchemaStore = create<SchemaStore>((set, get) => ({
           : table,
       ),
       isDirty: true,
-    }))},
+    }));
+  },
 
   deleteColumn: (tableId, columnId) => {
-    useHistoryStore
-        .getState()
-        .push(
-            get().getSnapshot()
-        );
+    useHistoryStore.getState().push(get().getSnapshot());
 
     set((state) => ({
       tables: state.tables.map((table) =>
@@ -264,14 +247,11 @@ export const useSchemaStore = create<SchemaStore>((set, get) => ({
           : table,
       ),
       isDirty: true,
-    }))},
+    }));
+  },
 
   addRelationship: (relationship) => {
-    useHistoryStore
-        .getState()
-        .push(
-            get().getSnapshot()
-        );
+    useHistoryStore.getState().push(get().getSnapshot());
 
     set((state) => {
       const sourceColumn = getColumn(
@@ -312,14 +292,11 @@ export const useSchemaStore = create<SchemaStore>((set, get) => ({
         };
       }
       return state;
-    })},
+    });
+  },
 
   updateRelationship: (id, updates) => {
-    useHistoryStore
-        .getState()
-        .push(
-            get().getSnapshot()
-        );
+    useHistoryStore.getState().push(get().getSnapshot());
 
     set((state) => ({
       relationships: state.relationships.map((relationship) =>
@@ -331,20 +308,18 @@ export const useSchemaStore = create<SchemaStore>((set, get) => ({
           : relationship,
       ),
       isDirty: true,
-    }))},
+    }));
+  },
 
   deleteRelationship: (id) => {
-    useHistoryStore
-        .getState()
-        .push(
-            get().getSnapshot()
-        );
+    useHistoryStore.getState().push(get().getSnapshot());
 
     set((state) => ({
       relationships: state.relationships.filter((r) => r.id !== id),
       selectedRelationshipId: null,
       isDirty: true,
-    }))},
+    }));
+  },
 
   loadProject: (tables, relationships) =>
     set({

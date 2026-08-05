@@ -13,7 +13,6 @@ export default function ContextMenuItem({
   danger,
   onClick,
 }: Props) {
-
   return (
     <button
       onClick={onClick}
@@ -34,12 +33,11 @@ export default function ContextMenuItem({
 
         ${
           danger
-          ? `
+            ? `
             text-red-400
             hover:bg-red-500/10
           `
-          :
-          `
+            : `
             text-zinc-300
             hover:bg-zinc-800
             hover:text-white

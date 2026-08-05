@@ -70,13 +70,9 @@ export default function ActionCard({
         {icon}
       </div>
 
-      <h2 className="text-lg font-semibold text-white">
-        {title}
-      </h2>
+      <h2 className="text-lg font-semibold text-white">{title}</h2>
 
-      <p className="mt-2 text-sm leading-6 text-zinc-400">
-        {description}
-      </p>
+      <p className="mt-2 text-sm leading-6 text-zinc-400">{description}</p>
 
       <ArrowRight
         size={18}

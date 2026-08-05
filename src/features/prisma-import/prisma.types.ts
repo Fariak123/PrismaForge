@@ -3,45 +3,39 @@ export interface PrismaSchema {
 }
 
 export interface PrismaRelation {
+  fieldName: string;
 
-    fieldName: string;
+  targetModel: string;
 
-    targetModel: string;
+  sourceFields: string[];
 
-    sourceFields: string[];
+  targetFields: string[];
 
-    targetFields: string[];
+  isList: boolean;
 
-    isList: boolean;
-
-    optional: boolean;
-
+  optional: boolean;
 }
 
 export interface PrismaModel {
+  name: string;
 
-    name: string;
+  fields: PrismaField[];
 
-    fields: PrismaField[];
-
-    relations: PrismaRelation[];
-
+  relations: PrismaRelation[];
 }
 
 export interface PrismaField {
+  name: string;
 
-    name: string;
+  type: string;
 
-    type: string;
+  optional: boolean;
 
-    optional: boolean;
+  isArray: boolean;
 
-    isArray: boolean;
+  isRelation: boolean;
 
-    isRelation: boolean;
+  isId: boolean;
 
-    isId: boolean;
-
-    isUnique: boolean;
-
+  isUnique: boolean;
 }

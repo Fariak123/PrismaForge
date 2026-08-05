@@ -4,7 +4,6 @@ import {
   MiniMap,
   ReactFlow,
   useNodesState,
-  useReactFlow,
   type Connection,
   type Node,
 } from '@xyflow/react';
@@ -44,17 +43,15 @@ const nodeTypes = {
 };
 
 interface Props {
-    startupAction: StartupAction | null;
+  startupAction: StartupAction | null;
 }
 
-export default function Canvas({startupAction}: Props) {
-  const [contextMenu, setContextMenu] =
-    useState<{
-      x:number;
-      y:number;
-      tableId?:string;
-    } | null>(null);
-  const reactFlow = useReactFlow();
+export default function Canvas({ startupAction }: Props) {
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    tableId?: string;
+  } | null>(null);
 
   const tables = useSchemaStore((s) => s.tables);
 
@@ -62,7 +59,9 @@ export default function Canvas({startupAction}: Props) {
 
   const project = useProject();
 
-  const history = useHistoryStore()
+  const reactFlow = project.reactFlow;
+
+  const history = useHistoryStore();
 
   const isDirty = useSchemaStore((s) => s.isDirty);
 
@@ -156,8 +155,8 @@ export default function Canvas({startupAction}: Props) {
     });
 
     setTimeout(() => {
-        highlightNode(table.id);
-    }, 350)
+      highlightNode(table.id);
+    }, 350);
   };
 
   const handleFocusColumn = (tableId: string, columnId: string) => {
@@ -170,86 +169,57 @@ export default function Canvas({startupAction}: Props) {
     });
 
     setTimeout(() => {
-        highlightColumn(columnId);
-  }, 350);
-  }
+      highlightColumn(columnId);
+    }, 350);
+  };
 
   const dragSnapshot = useRef<SchemaSnapshot>(null);
 
   const handleNodeDragStart = () => {
-    dragSnapshot.current =
-      useSchemaStore
-        .getState()
-        .getSnapshot();
+    dragSnapshot.current = useSchemaStore.getState().getSnapshot();
   };
 
   const handleNodeDragStop = () => {
     if (!dragSnapshot.current) {
-        return;
+      return;
     }
 
-    const before =
-      dragSnapshot.current.tables;
+    const before = dragSnapshot.current.tables;
 
-    const after =
-      useSchemaStore
-        .getState()
-        .tables;
+    const after = useSchemaStore.getState().tables;
 
-
-    const changed =
-      JSON.stringify(before)
-      !==
-      JSON.stringify(after);
-
+    const changed = JSON.stringify(before) !== JSON.stringify(after);
 
     if (changed) {
-      useHistoryStore
-        .getState()
-        .push(
-          dragSnapshot.current
-        );
+      useHistoryStore.getState().push(dragSnapshot.current);
     }
 
     dragSnapshot.current = null;
   };
 
   const handleAutoLayout = () => {
-    useHistoryStore
-      .getState()
-      .push(
-        useSchemaStore
-          .getState()
-          .getSnapshot()
-      )
-    const layouted =
-        autoLayout(
-            nodes,
-            edges
-        );
+    useHistoryStore.getState().push(useSchemaStore.getState().getSnapshot());
+    const layouted = autoLayout(nodes, edges);
 
-    layouted.map((node => moveTable(node.id, node.position.x, node.position.y)))
-}
-
-const handleFitView = () => {
-    reactFlow.fitView({
-        duration: 700,
-
-        padding: 0.15,
-
-    });
-};
-
-const handleCenter = () => {
-    reactFlow.setCenter(
-        0,
-        0,
-        {
-            duration: 700,
-            zoom: 1,
-        }
+    layouted.map((node) =>
+      moveTable(node.id, node.position.x, node.position.y),
     );
-};
+  };
+
+  const handleFitView = () => {
+    reactFlow.fitView({
+      duration: 700,
+
+      padding: 0.15,
+    });
+  };
+
+  const handleCenter = () => {
+    reactFlow.setCenter(0, 0, {
+      duration: 700,
+      zoom: 1,
+    });
+  };
 
   useEffect(() => {
     setNodes(schemaNodes);
@@ -284,56 +254,41 @@ const handleCenter = () => {
 
   useEffect(() => {
     switch (startupAction) {
-        case "open":
-            project.pickProject();
-            break;
+      case 'open':
+        project.pickProject();
+        break;
 
-        case "demo":
-            project.loadDemo();
-            break;
+      case 'demo':
+        project.loadDemo();
+        break;
 
-        case "new":
-            project.newProject();
-            break;
+      case 'new':
+        project.newProject();
+        break;
     }
+  }, [startupAction]);
 
-}, [startupAction]);
+  useEffect(() => {
+    const close = () => setContextMenu(null);
 
-    useEffect(()=>{
+    window.addEventListener('blur', close);
 
- const close = () =>
-   setContextMenu(null);
+    return () => window.removeEventListener('blur', close);
+  }, []);
 
+  useKeyboardShortcuts({
+    save: project.saveProject,
 
- window.addEventListener(
-   'blur',
-   close
- );
+    newPorject: project.newProject,
 
+    open: project.pickProject,
 
- return () =>
- window.removeEventListener(
-   'blur',
-   close
- );
+    undo: history.undo,
 
-},[]);
+    redo: history.redo,
 
-useKeyboardShortcuts({
-
-  save: project.saveProject,
-
-  newPorject: project.newProject,
-
-  open: project.pickProject,
-
-  undo: history.undo,
-
-  redo: history.redo,
-
-  fitView: handleFitView,
-
-});
+    fitView: handleFitView,
+  });
 
   return (
     <div className="relative h-screen w-screen bg-zinc-950">
@@ -405,125 +360,93 @@ useKeyboardShortcuts({
           onNodeContextMenu={(event, node) => {
             event.preventDefault();
             setContextMenu({
-                x: event.clientX,
-                y: event.clientY,
-                tableId: node.id,
+              x: event.clientX,
+              y: event.clientY,
+              tableId: node.id,
             });
           }}
-          onPaneContextMenu={(event)=>{
+          onPaneContextMenu={(event) => {
             event.preventDefault();
-              setContextMenu({
-                x:event.clientX,
-                y:event.clientY,
-          });
-
-}}
+            setContextMenu({
+              x: event.clientX,
+              y: event.clientY,
+            });
+          }}
         >
           <Background variant={BackgroundVariant.Dots} gap={24} size={1.2} />
           <MiniMap pannable zoomable />
         </ReactFlow>
+        {contextMenu && (
+          <ContextMenu x={contextMenu.x} y={contextMenu.y}>
+            {contextMenu.tableId ? (
+              <>
+                <ContextMenuItem
+                  label="Add Column"
 
-        {
-contextMenu && (
+                  onClick={() => {
+                    const columnId = addColumn(contextMenu.tableId!);
+                    handleFocusColumn(contextMenu.tableId!, columnId);
+                    setContextMenu(null);
+                  }}
+                />
 
-<ContextMenu
- x={contextMenu.x}
- y={contextMenu.y}
->
+                <ContextMenuItem
+                  label="Rename Table"
 
-{
-contextMenu.tableId ? (
+                  onClick={() => {
+                    handleFocusTable(contextMenu.tableId!);
+                    setContextMenu(null);
+                  }}
+                />
 
-<>
+                <ContextMenuItem
+                  label="Delete Table"
 
-<ContextMenuItem
+                  danger
 
-label="Add Column"
+                  onClick={() => {
+                    deleteTable(contextMenu.tableId!);
+                    setContextMenu(null);
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <ContextMenuItem
+                  label="New Table"
 
-onClick={()=>{
-  const columnId = addColumn(contextMenu.tableId!)
-  handleFocusColumn(contextMenu.tableId!, columnId);
-  setContextMenu(null);
-}}
+                  onClick={() => {
+                    const table = addTable();
+                    selectTable(table.id);
 
-/>
+                    reactFlow.setCenter(
+                      table.position.x + 150,
+                      table.position.y + 80,
+                      {
+                        zoom: 1.2,
+                        duration: 500,
+                      },
+                    );
 
+                    setTimeout(() => {
+                      highlightNode(table.id);
+                    }, 350);
+                    setContextMenu(null);
+                  }}
+                />
 
-<ContextMenuItem
+                <ContextMenuItem
+                  label="Auto Layout"
 
-label="Rename Table"
-
-onClick={()=>{
-  handleFocusTable(contextMenu.tableId!);
-  setContextMenu(null);
-}}
-
-/>
-
-
-<ContextMenuItem
-
-label="Delete Table"
-
-danger
-
-onClick={()=>{
-  deleteTable(contextMenu.tableId!)
-  setContextMenu(null);
-}}
-
-/>
-
-</>
-
-
-) : (
-
-<>
-
-<ContextMenuItem
-
-label="New Table"
-
-onClick={()=>{
-  const table = addTable();
-  selectTable(table.id);
-
-    reactFlow.setCenter(table.position.x + 150, table.position.y + 80, {
-      zoom: 1.2,
-      duration: 500,
-    });
-
-    setTimeout(() => {
-        highlightNode(table.id);
-    }, 350)
-  setContextMenu(null);
-}}
-
-/>
-
-
-<ContextMenuItem
-
-label="Auto Layout"
-
-onClick={()=>{
-  handleAutoLayout();
-  setContextMenu(null);
-}}
-
-/>
-
-</>
-
-)
-
-}
-
-</ContextMenu>
-
-)
-}
+                  onClick={() => {
+                    handleAutoLayout();
+                    setContextMenu(null);
+                  }}
+                />
+              </>
+            )}
+          </ContextMenu>
+        )}
 
         <FloatingActions
           onAutoLayout={handleAutoLayout}

@@ -6,11 +6,7 @@ interface ContextMenuProps {
   children: ReactNode;
 }
 
-export default function ContextMenu({
-  x,
-  y,
-  children,
-}: ContextMenuProps) {
+export default function ContextMenu({ x, y, children }: ContextMenuProps) {
   return (
     <div
       style={{
