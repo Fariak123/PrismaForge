@@ -354,7 +354,7 @@ useKeyboardShortcuts({
         hidden
         ref={project.inputRef}
         type="file"
-        accept=".prismaforge"
+        accept=".prismaforge, .prisma"
         onChange={project.handleFileSelected}
       />
       <DialogModal

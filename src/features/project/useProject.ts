@@ -4,8 +4,18 @@ import { useSchemaStore } from '../../entities/schema/schema.store';
 import { useValidation } from '../validation/useValidation';
 import { downloadProject, openProject } from './project.service';
 import type { ValidationIssue } from '../validation/validation.types';
+import { parsePrisma } from '../prisma-import/prisma.parser';
+import { prismaToSnapshot } from '../prisma-import/schemaToSnapshot';
+
+type PendingAction =
+  | 'save-project'
+  | 'generate-prisma'
+  | null;
 
 export function useProject() {
+  
+  const [pendingAction, setPendingAction] = useState<PendingAction>(null);
+
   const loadDemo = async () => {
     const response =
       await fetch("/demo.prismaforge");
@@ -23,6 +33,7 @@ export function useProject() {
     const result = validate();
 
     if (!result.success) {
+      setPendingAction('generate-prisma');
       setIssues(result.issues);
       setIssuesOpen(true);
       return;
@@ -44,30 +55,6 @@ export function useProject() {
       ...prev,
       open: false,
     }));
-  };
-  const debugDialog = () => {
-    showDialog({
-      open: true,
-
-      title: 'Debug Dialog',
-
-      description: 'If you can see this, DialogModal is working correctly.',
-
-      confirmText: 'OK',
-
-      cancelText: 'Cancel',
-
-      confirmVariant: 'primary',
-
-      onConfirm: () => {
-        console.log('Dialog confirmed');
-
-        showDialog((d) => ({
-          ...d,
-          open: false,
-        }));
-      },
-    });
   };
 
   const {
@@ -119,7 +106,7 @@ export function useProject() {
       onConfirm: () => {
         closeDialog();
 
-        inputRef.current?.click();
+        clearSchema();
       },
     });
   };
@@ -128,6 +115,7 @@ export function useProject() {
     const result = validate();
 
     if (!result.success) {
+      setPendingAction('save-project');
       setIssues(result.issues);
       setIssuesOpen(true);
       return;
@@ -143,12 +131,22 @@ export function useProject() {
   };
 
   const forceSave = () => {
-    downloadProject({
-      version: 1,
-      name: 'Database',
-      tables,
-      relationships,
-    });
+    switch (pendingAction) {
+      case 'save-project':
+        downloadProject({
+          version: 1,
+          name: 'Database',
+          tables,
+          relationships,
+        });
+        break;
+
+      case 'generate-prisma':
+        setPrismaViewerOpen(true);
+          break;
+    }
+
+    setPendingAction(null);
     markSaved();
     closeIssues();
   };
@@ -158,16 +156,27 @@ export function useProject() {
 
     if (!file) return;
 
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    const text = await file.text();
     try {
-      const project = await openProject(file);
-      loadProject(project.tables, project.relationships);
+      switch(extension) {
+        case 'prismaforge':
+          const project = await openProject(file);
+          loadProject(project.tables, project.relationships);
+          break;
+        case 'prisma':
+          const prisma = parsePrisma(text);
+          const snapshot = prismaToSnapshot(prisma);
+          replaceSnapshot(snapshot);
+          break
+      }
 
       requestAnimationFrame(() => {
-        reactFlow.fitView({
-          duration: 500,
-          padding: 0.2,
-        });
-      });
+            reactFlow.fitView({
+              duration: 500,
+              padding: 0.2,
+            });
+          });
     } catch {
       showDialog({
         open: true,
@@ -221,6 +230,8 @@ export function useProject() {
   };
 
   return {
+    setPendingAction,
+
     loadDemo,
 
     prismaViewerOpen,
@@ -234,8 +245,6 @@ export function useProject() {
     issuesOpen,
 
     closeIssues,
-
-    debugDialog,
 
     inputRef,
 

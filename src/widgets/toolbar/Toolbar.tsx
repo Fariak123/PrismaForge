@@ -115,7 +115,7 @@ export default function Toolbar({
   "
         >
           <FileCode size={16} />
-          Generate Prisma Schema
+          Generate .prisma
         </button>
 
         <button
