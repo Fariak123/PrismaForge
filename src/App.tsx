@@ -34,6 +34,11 @@ export default function App() {
       );
 
     case 'editor':
-      return <Canvas startupAction={startupAction} />;
+      return (
+        <Canvas
+          backToWelcome={() => setScreen('welcome')}
+          startupAction={startupAction}
+        />
+      );
   }
 }

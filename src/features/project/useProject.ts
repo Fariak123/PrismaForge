@@ -13,11 +13,35 @@ export function useProject() {
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
 
   const loadDemo = async () => {
-    const response = await fetch('/demo.prismaforge');
+    async function load() {
+      const response = await fetch('/demo.prismaforge');
+      const project = await response.json();
+      replaceSnapshot(project);
+      markSaved();
+    }
+    if (!isDirty) {
+      load();
+      return;
+    }
 
-    const project = await response.json();
+    showDialog({
+      open: true,
 
-    replaceSnapshot(project);
+      title: 'Unsaved Changes',
+
+      description: 'Loading Demo project will discard all unsaved changes.',
+
+      confirmText: 'Continue',
+
+      cancelText: 'Cancel',
+
+      confirmVariant: 'danger',
+
+      onConfirm: () => {
+        load();
+        closeDialog();
+      },
+    });
   };
 
   const [prismaViewerOpen, setPrismaViewerOpen] = useState(false);

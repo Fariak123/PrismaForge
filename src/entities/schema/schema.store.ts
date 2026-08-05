@@ -21,6 +21,7 @@ interface SchemaStore {
   selectRelationship: (id: string | null) => void;
 
   addTable: () => Table;
+  duplicateTable(tableId: string): Table | null;
   moveTable: (id: string, x: number, y: number) => void;
   renameTable: (id: string, name: string) => void;
   deleteTable: (id: string) => void;
@@ -52,32 +53,7 @@ function getColumn(tables: Table[], tableId: string, columnId: string) {
 }
 
 export const useSchemaStore = create<SchemaStore>((set, get) => ({
-  tables: [
-    {
-      id: 'user',
-      name: 'User',
-      position: { x: 100, y: 100 },
-
-      columns: [
-        {
-          id: '1',
-          name: 'id',
-          type: 'Int',
-          primaryKey: true,
-          nullable: false,
-          unique: true,
-        },
-        {
-          id: '2',
-          name: 'email',
-          type: 'String',
-          primaryKey: false,
-          nullable: false,
-          unique: true,
-        },
-      ],
-    },
-  ],
+  tables: [],
   nodes: [],
 
   relationships: [],
@@ -135,6 +111,42 @@ export const useSchemaStore = create<SchemaStore>((set, get) => ({
     }));
 
     return table;
+  },
+
+  duplicateTable: (tableId) => {
+    useHistoryStore.getState().push(get().getSnapshot());
+
+    const table = get().tables.find((t) => t.id === tableId);
+    if (!table) return null;
+
+    const columnIdMap = new Map<string, string>();
+
+    const columns = table.columns.map((column) => {
+      const newId = crypto.randomUUID();
+      columnIdMap.set(column.id, newId);
+      return {
+        ...column,
+        id: newId,
+      };
+    });
+
+    const copy = {
+      ...table,
+      id: crypto.randomUUID(),
+      name: `${table.name} Copy`,
+      position: {
+        x: table.position.x + 80,
+        y: table.position.y + 80,
+      },
+      columns,
+    };
+
+    set((state) => ({
+      tables: [...state.tables, copy],
+      isDirty: true,
+    }));
+
+    return copy;
   },
 
   moveTable: (id, x, y) =>

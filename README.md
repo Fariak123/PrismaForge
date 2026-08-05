@@ -1,1 +1,50 @@
-**PrismaForge** — An intelligent visual database design IDE featuring live schema validation, automatic relationship detection, production-ready Prisma and SQL code generation, migration previews, and a modular architecture designed for future real-time collaboration.
+# PrismaForge
+
+> A modern visual Prisma schema designer built with React, TypeScript and React Flow.
+
+
+## 🚀 Live Demo
+
+**https://prismaforge.vercel.app**
+
+---
+
+## Features
+
+- 🎨 Visual ERD editor
+- 📥 Import existing `schema.prisma`
+- 📤 Generate Prisma schema
+- 💾 Save and load `.prismaforge` projects
+- 🔗 Visual relationship editor
+- 🔍 Table search
+- ⚡ Auto Layout
+- ↩️ Undo / Redo
+
+---
+
+## Tech Stack
+
+- React
+- Vite
+- TypeScript
+- React Flow
+- Zustand
+- Tailwind CSS
+- Prisma Schema Parser
+
+---
+
+## Local Development
+
+```bash
+npm install
+npm run dev
+```
+
+---
+
+## Build
+
+```bash
+npm run build
+```

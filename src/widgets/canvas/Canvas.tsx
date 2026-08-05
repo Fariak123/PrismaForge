@@ -37,16 +37,18 @@ import type { StartupAction } from '../../App';
 import ContextMenu from '../context-menu/ContextMenu';
 import ContextMenuItem from '../context-menu/ContextMenuItem';
 import { useKeyboardShortcuts } from '../../features/shortcuts/useKeyboardShortcuts';
+import type { Table } from '../../entities/schema/schema.types';
 
 const nodeTypes = {
   table: TableNode,
 };
 
 interface Props {
+  backToWelcome: () => void;
   startupAction: StartupAction | null;
 }
 
-export default function Canvas({ startupAction }: Props) {
+export default function Canvas({ backToWelcome, startupAction }: Props) {
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
@@ -99,6 +101,8 @@ export default function Canvas({ startupAction }: Props) {
   const moveTable = useSchemaStore((state) => state.moveTable);
 
   const addColumn = useSchemaStore((s) => s.addColumn);
+
+  const duplicateTable = useSchemaStore((s) => s.duplicateTable);
 
   const prisma = useMemo(
     () => generatePrisma(tables, relationships),
@@ -157,6 +161,15 @@ export default function Canvas({ startupAction }: Props) {
     setTimeout(() => {
       highlightNode(table.id);
     }, 350);
+  };
+
+  const handleDublicatedFocusTable = (table: Table) => {
+    selectTable(table.id);
+    reactFlow.setCenter(table.position.x + 150, table.position.y + 80, {
+      zoom: 1.2,
+      duration: 500,
+    });
+    setTimeout(() => highlightNode(table.id), 350);
   };
 
   const handleFocusColumn = (tableId: string, columnId: string) => {
@@ -293,6 +306,7 @@ export default function Canvas({ startupAction }: Props) {
   return (
     <div className="relative h-screen w-screen bg-zinc-950">
       <Toolbar
+        backToWelcome={backToWelcome}
         onAddTable={() => {
           const table = addTable();
           selectTable(table.id);
@@ -395,6 +409,15 @@ export default function Canvas({ startupAction }: Props) {
 
                   onClick={() => {
                     handleFocusTable(contextMenu.tableId!);
+                    setContextMenu(null);
+                  }}
+                />
+
+                <ContextMenuItem
+                  label="Duplicate"
+                  onClick={() => {
+                    const newTable = duplicateTable(contextMenu.tableId!);
+                    if (newTable) handleDublicatedFocusTable(newTable);
                     setContextMenu(null);
                   }}
                 />

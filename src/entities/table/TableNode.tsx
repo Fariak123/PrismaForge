@@ -14,10 +14,15 @@ function TableNode({ id, data, selected }: NodeProps<TableNodeType>) {
   const updateNodeInternals = useUpdateNodeInternals();
 
   const highlighted = useEditorStore((state) => state.highlightedNodeId === id);
+  const highlightColumn = useEditorStore((state) => state.highlightColumn);
 
   useEffect(() => {
     updateNodeInternals(id);
   }, [id, data.columns.length, updateNodeInternals]);
+
+  const handleFocusColumn = (columnId: string) => {
+    highlightColumn(columnId);
+  };
 
   return (
     <div
@@ -59,40 +64,42 @@ function TableNode({ id, data, selected }: NodeProps<TableNodeType>) {
 
       <div>
         {data.columns.map((column) => (
-          <div
+          <button
+            onClick={() => handleFocusColumn(column.id)}
             key={column.id}
-            className="
-    group
-    relative
-    flex
-    h-10
-    items-center
-    justify-between
-    border-b
-    border-zinc-800
-    px-4
-    text-sm
-    last:border-none
-    hover:bg-zinc-800/40
-"
+            className={`
+              group
+              relative
+              flex
+              w-full
+              h-10
+              border-b 
+              border-zinc-800
+              items-center
+              justify-between
+              px-4
+              text-sm
+              last:border-none
+              hover:bg-zinc-800/40
+            `}
           >
             <Handle
               type="target"
               id={`target-${column.id}`}
               position={Position.Left}
-              className="
-    !left-1
-    !h-3
-    !w-1
-    !rounded-full
-    !border-none
-    !bg-sky-400
-    opacity-0
-    transition-all
-    duration-150
-    group-hover:opacity-100
-    group-hover:shadow-[0_0_10px_#38bdf8]
-  "
+              className={`
+                !left-1
+                !h-3
+                !w-1
+                !rounded-full
+                !border-none
+                !bg-sky-400
+                opacity-0
+                transition-all
+                duration-150
+                group-hover:opacity-100
+                group-hover:shadow-[0_0_10px_#38bdf8]
+              `}
             />
             <div className="flex items-center gap-2">
               {column.primaryKey ? (
@@ -112,21 +119,21 @@ function TableNode({ id, data, selected }: NodeProps<TableNodeType>) {
               type="source"
               id={`source-${column.id}`}
               position={Position.Right}
-              className="
-    !right-1
-    !h-3
-    !w-1
-    !rounded-full
-    !border-none
-    !bg-sky-400
-    opacity-0
-    transition-all
-    duration-150
-    group-hover:opacity-100
-    group-hover:shadow-[0_0_10px_#38bdf8]
-  "
+              className={`
+              !right-1
+              !h-3
+              !w-1
+              !rounded-full
+              !border-none
+              !bg-sky-400
+              opacity-0
+              transition-all
+              duration-150
+              group-hover:opacity-100
+              group-hover:shadow-[0_0_10px_#38bdf8]
+            `}
             />
-          </div>
+          </button>
         ))}
       </div>
     </div>
