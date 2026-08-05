@@ -5,7 +5,7 @@
 
 ## 🚀 Live Demo
 
-**https://prismaforge.vercel.app**
+**[prismaforge.vercel.app](https://prisma-forge.vercel.app/)**
 
 ---
 
