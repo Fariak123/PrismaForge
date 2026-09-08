@@ -1,9 +1,9 @@
 # PrismaForge
 
-> A modern visual Prisma schema designer built with React, TypeScript and React Flow.
+> A visual Prisma schema designer built with React, TypeScript and React Flow.
 
 
-## 🚀 Live Demo
+## Live Demo
 
 **[prismaforge.vercel.app](https://prisma-forge.vercel.app/)**
 
@@ -11,14 +11,10 @@
 
 ## Features
 
-- 🎨 Visual ERD editor
-- 📥 Import existing `schema.prisma`
-- 📤 Generate Prisma schema
-- 💾 Save and load `.prismaforge` projects
-- 🔗 Visual relationship editor
-- 🔍 Table search
-- ⚡ Auto Layout
-- ↩️ Undo / Redo
+- Visual ERD editor
+- Import existing `schema.prisma`
+- Generate Prisma schema
+- Save and load `.prismaforge` projects
 
 ---
 
