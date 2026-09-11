@@ -44,3 +44,6 @@ npm run dev
 ```bash
 npm run build
 ```
+## License
+
+This project is intended as a personal portfolio and learning project.
